@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Section, SectionHead, Icon, Btn } from "./ui";
+import { StripeSpotButton } from "./StripeSpotButton";
 import { SERVICES } from "@/lib/tax-content";
 
 export function TaxService() {
@@ -56,6 +57,8 @@ export function TaxService() {
                 この内容で相談する
               </Btn>
             </div>
+            {/* スポット相談タブのみ: 2 回目以降の ¥5,000 単発決済 (Stripe ショーケース) */}
+            {s.key === "spot" && <StripeSpotButton />}
           </div>
           <div className="md:col-span-7 md:border-l border-line md:pl-10">
             <div className="font-mono text-[10px] tracking-eyebrow uppercase text-ink-400 mb-5">含まれるもの</div>
