@@ -662,3 +662,69 @@ h2 { letter-spacing: 0.1em; }
 
 /* カード面 (角丸はトーンに追従、formal は 0) */
 .tax-root .surf { border-radius: var(--card-r); }
+
+/* ---- 法務ページの本文組版 ---- */
+.tax-legal { color: var(--color-ink-600); }
+.tax-legal h2 {
+  font-family: var(--font-mincho);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--color-navy);
+  margin: 48px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-line);
+}
+.tax-legal h3 {
+  font-family: var(--font-mincho);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-navy);
+  margin: 28px 0 10px;
+}
+.tax-legal p {
+  font-size: 14.5px;
+  letter-spacing: 0.02em;
+  line-height: 1.95;
+  margin: 0 0 14px;
+}
+.tax-legal ul,
+.tax-legal ol {
+  margin: 0 0 18px;
+  padding-left: 1.4em;
+}
+.tax-legal li {
+  font-size: 14.5px;
+  line-height: 1.9;
+  margin-bottom: 6px;
+}
+.tax-legal a {
+  color: var(--color-gold-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.tax-legal a:hover { color: var(--color-navy); }
+/* 特商法の定義テーブル */
+.tax-legal dl {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  border-top: 1px solid var(--color-line);
+  margin: 8px 0 24px;
+}
+.tax-legal dt,
+.tax-legal dd {
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.tax-legal dt {
+  font-family: var(--font-mincho);
+  color: var(--color-navy);
+  font-weight: 500;
+}
+.tax-legal dd { margin: 0; color: var(--color-ink-600); }
+@media (max-width: 640px) {
+  .tax-legal dl { grid-template-columns: 1fr; }
+  .tax-legal dt { border-bottom: none; padding-bottom: 0; }
+  .tax-legal dd { padding-top: 6px; }
+}
