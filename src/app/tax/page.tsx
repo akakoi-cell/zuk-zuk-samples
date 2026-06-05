@@ -11,8 +11,11 @@ import { TaxFaq } from "@/components/tax/TaxFaq";
 import { TaxContact } from "@/components/tax/TaxContact";
 import { TaxFooter } from "@/components/tax/TaxFooter";
 import { TaxReveal } from "@/components/tax/TaxReveal";
+import { getTaxWorks, getTaxColumns } from "@/sanity/queries";
 
-export default function TaxPage() {
+export default async function TaxPage() {
+  // Sanity 未設定時は queries 側がハードコードデータにフォールバックする
+  const [works, columns] = await Promise.all([getTaxWorks(), getTaxColumns()]);
   return (
     <>
       <TaxHeader />
@@ -21,8 +24,8 @@ export default function TaxPage() {
         <TaxConcerns />
         <TaxWhyUs />
         <TaxService />
-        <TaxWorks />
-        <TaxColumn />
+        <TaxWorks items={works} />
+        <TaxColumn items={columns} />
         <TaxVoice />
         <TaxAbout />
         <TaxFaq />
