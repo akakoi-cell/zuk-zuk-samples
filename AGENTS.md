@@ -17,8 +17,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ### このリポジトリ内
 - `docs/ENV-SETUP-GUIDE.md` — 環境変数セットアップガイド (Sanity / Web3Forms / Stripe / Slack)
 - `docs/DEPLOY.md` — Vercel デプロイ手順
-- `.claude/skills/` — Skill (setup-image-workflow 等)
+- `.claude/skills/setup-image-workflow.md` — ビジュアル主体サンプルの画像配置フロー
+- `.claude/skills/setup-sample-demo-mode.md` — サンプル誘導型 UI (form disabled + AI STUDIO CTA)
 - `.claude/settings.json` — Bash 等の allow/deny ルール
+
+### 隣リポジトリの参照 Skill (重要)
+- `../zuk-zuk-template/.claude/skills/setup-seo-ogp.md` — **OG 画像は中央 630x630 正方形セーフエリアに集約必須** (LINE/Slack/Discord で 1:1 クロップ対応)
+- `../zuk-zuk-template/.claude/skills/setup-sanity-cms.md` — Sanity 連動 (samples では唯一本物連動する)
 
 ### 隣リポジトリ (正典)
 - `../zuk-zuk-ai-studio/docs/CLIENT_PROJECT_FLOW.md` — 案件標準フロー (Phase 0-L)
