@@ -1,19 +1,36 @@
-# 環境変数 セットアップガイド — みらい税理士事務所サンプル
+# 環境変数 セットアップガイド — サンプルサイト共通
 
-> 税理士サンプル (#67) を **本物連動** させるため、 各 SaaS のアカウント作成 + env 取得手順をまとめたガイド。
+> samples.zuk-zuk.com 配下のサンプル (#67〜#72) の env 設定ガイド。
 >
-> 想定所要時間: **30-60 分** (アカウント作成含む)
-> 結果: ローカル `http://localhost:3004/tax/` で全機能 (Sanity / Web3Forms / Stripe / Slack) が動く状態に
+> 想定所要時間: **10-20 分** (Sanity だけ設定すれば OK、 他はスキップ)
+> 結果: ローカル `http://localhost:3004/tax/` (or 他サンプル) で「サンプル誘導型」 として動作
+
+---
+
+## ⚠️ サンプル運用方針 (2026-06-09 決定、 重要)
+
+**samples.zuk-zuk.com は zuk-zuk AI STUDIO の営業ツール (公開デモ)** です。 訪問者が誤送信しないよう、 以下の方針で実装:
+
+| 機能 | サンプル方針 | 理由 |
+|---|---|---|
+| **Sanity CMS** | ✅ **本物連動** (env 必須) | 動く CMS デモが価値、 クライアント体験 |
+| **Web3Forms フォーム** | ❌ **無効化 (UI のみ)** | 誤送信防止 + 月 50 件 Free 枠の浪費防止 |
+| **Stripe 決済** | ❌ **無効化 (UI のみ)** | 訪問者が「動くか試す」 を防ぐ |
+| **Slack 通知** | ❌ **env 未設定で no-op** | 不要な通知を避ける |
+
+**実装方法**: `setup-sample-demo-mode` Skill (`.claude/skills/`) を参照。 フォーム / 決済ボタンを `disabled` + サンプル警告バナー + AI STUDIO 誘導 CTA を表示する 3 レイヤー構成。
+
+→ **このガイドは Sanity (Section 1) だけ実施必須**、 Section 2-4 (Web3Forms / Stripe / Slack) は **クライアント本番案件で必要時の参考** として残しています (サンプルでは設定不要)。
 
 ---
 
 ## 📋 全体フロー
 
 ```
-1. Sanity     アカウント作成 → Project ID + Token 取得 → .env.local に記入 → 動作確認
-2. Web3Forms  メール登録 → Access Key 取得 → ダッシュボード設定 → .env.local 記入
-3. Stripe     (オプション) アカウント作成 → Test mode keys 取得 → .env.local 記入
-4. Slack      (オプション) App 作成 → Webhook URL 取得 → .env.local 記入
+1. Sanity     アカウント作成 → Project ID + Token 取得 → .env.local に記入 → 動作確認  ← 必須
+2. Web3Forms  (サンプルではスキップ) — 本番案件で必要時に設定                           ← 任意
+3. Stripe     (サンプルではスキップ) — 本番案件で必要時に設定                           ← 任意
+4. Slack      (サンプルではスキップ) — 本番案件で必要時に設定                           ← 任意
 5. 動作確認   npm run dev → http://localhost:3004/tax/ で各機能テスト
 ```
 

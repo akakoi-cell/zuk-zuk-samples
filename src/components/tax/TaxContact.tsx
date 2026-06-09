@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Script from "next/script";
 import { Section, Eyebrow, Icon, Btn } from "./ui";
 import { CONTACT_TABS, CONTACT_INFO } from "@/lib/tax-content";
 
-const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
-const hasWeb3Forms = Boolean(WEB3FORMS_KEY);
-
-type Status = "idle" | "submitting" | "success" | "error";
+// === サンプル誘導モード ===
+// このサイトはサンプルのため、 フォーム送信は無効化。
+// 実際の問い合わせは zuk-zuk AI STUDIO へ誘導する。
+const AI_STUDIO_URL = "https://ai-studio.zuk-zuk.com";
 
 function Field({
   label,
@@ -34,53 +33,9 @@ function Field({
 
 export function TaxContact() {
   const [tab, setTab] = useState(0);
-  const [status, setStatus] = useState<Status>("idle");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const inputCls =
-    "w-full bg-white/[0.04] border border-white/15 text-white placeholder-navy-100/40 px-4 py-3 text-[14px] focus:border-gold transition-colors outline-none";
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!hasWeb3Forms) return;
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    // honeypot: bot が入力したら送信中断
-    if (formData.get("botcheck")) return;
-
-    setStatus("submitting");
-    setErrorMessage("");
-    formData.append("access_key", WEB3FORMS_KEY!);
-
-    try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success) {
-        setStatus("success");
-        form.reset();
-        // Phase K: Slack 通知を fire-and-forget で並列呼び出し (route 未実装でも握りつぶす)
-        fetch("/api/contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            kind: CONTACT_TABS[tab].label,
-            name: formData.get("name"),
-            email: formData.get("email"),
-            message: formData.get("message"),
-          }),
-        }).catch(() => {});
-      } else {
-        setStatus("error");
-        setErrorMessage(data.message || "送信に失敗しました。お手数ですがお電話ください。");
-      }
-    } catch {
-      setStatus("error");
-      setErrorMessage("ネットワークエラーが発生しました。時間をおいて再度お試しください。");
-    }
-  };
+    "w-full bg-white/[0.04] border border-white/15 text-white placeholder-navy-100/40 px-4 py-3 text-[14px] focus:border-gold transition-colors outline-none disabled:opacity-70";
 
   return (
     <Section id="contact" dark className="py-20 md:py-28 relative overflow-hidden">
@@ -117,6 +72,26 @@ export function TaxContact() {
           </div>
         </div>
         <div className="md:col-span-7">
+          {/* ⚠️ サンプル誘導バナー (最上部、目立つ) */}
+          <div className="mb-5 border border-gold/50 bg-gold/[0.08] p-5">
+            <p className="font-mincho text-[15px] text-gold-light flex items-start gap-2">
+              <span aria-hidden>📌</span>
+              <span>このサイトは <strong>zuk-zuk AI STUDIO</strong> のサンプルです</span>
+            </p>
+            <p className="jp text-[13px] text-navy-100/85 mt-2 leading-relaxed">
+              みらい税理士事務所は架空のデモ事務所です。 サイト制作のご相談は、
+              <a
+                href={AI_STUDIO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold-light underline underline-offset-2 hover:text-gold mx-1"
+              >
+                zuk-zuk AI STUDIO
+              </a>
+              までお願いいたします。
+            </p>
+          </div>
+
           <div className="surf overflow-hidden border border-white/15 bg-white/[0.02] p-6 md:p-9">
             {/* tabs */}
             <div className="flex border border-white/15 mb-7">
@@ -136,132 +111,87 @@ export function TaxContact() {
               ))}
             </div>
 
-            {status === "success" ? (
-              <div className="flex flex-col items-center text-center py-12 px-4">
-                <span className="inline-flex items-center justify-center w-14 h-14 border border-gold/50 text-gold-light mb-6">
-                  <Icon name="check" className="w-7 h-7" />
-                </span>
-                <h3 className="font-mincho text-[22px] text-white">送信ありがとうございました</h3>
-                <p className="jp text-navy-100/75 text-[14px] mt-4 max-w-[36ch]">
-                  2 営業日以内に、担当税理士からご連絡いたします。お急ぎの場合はお電話でもお気軽にどうぞ。
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setStatus("idle")}
-                  className="font-mono text-[12px] text-gold-light mt-8 hover:text-gold transition-colors"
-                >
-                  別の相談を送る →
-                </button>
+            {/* フォーム UI (見た目のみ、 送信不可) */}
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              aria-disabled="true"
+              className="grid grid-cols-2 gap-5"
+            >
+              <div className="col-span-2 sm:col-span-1">
+                <Field label="お名前" required>
+                  <input name="name" disabled className={inputCls} placeholder="未来 太郎" />
+                </Field>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-5">
-                {/* honeypot — 人間には不可視 */}
-                <input
-                  type="checkbox"
-                  name="botcheck"
-                  className="hidden"
-                  style={{ display: "none" }}
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
-                {/* メール件名・種別 (Web3Forms へ送る隠しフィールド) */}
-                <input
-                  type="hidden"
-                  name="subject"
-                  value={`【みらい税理士事務所】お問い合わせ（${CONTACT_TABS[tab].label}）`}
-                />
-                <input type="hidden" name="from_name" value="みらい税理士事務所サイト" />
-                <input type="hidden" name="相談種別" value={CONTACT_TABS[tab].label} />
+              <div className="col-span-2 sm:col-span-1">
+                <Field label="メールアドレス" required>
+                  <input name="email" type="email" disabled className={inputCls} placeholder="you@example.com" />
+                </Field>
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <Field label="電話番号">
+                  <input name="phone" disabled className={inputCls} placeholder="090-0000-0000" />
+                </Field>
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <Field label="保有物件・家賃収入の規模">
+                  <select name="規模" disabled className={`${inputCls} appearance-none`} defaultValue="">
+                    <option value="" className="bg-navy-900">
+                      選択してください
+                    </option>
+                  </select>
+                </Field>
+              </div>
+              <div className="col-span-2">
+                <Field label="ご相談内容" required>
+                  <textarea
+                    name="message"
+                    rows={4}
+                    disabled
+                    className={inputCls}
+                    placeholder={`「${CONTACT_TABS[tab].label}」について相談したい内容をご記入ください。`}
+                  ></textarea>
+                </Field>
+              </div>
 
-                <div className="col-span-2 sm:col-span-1">
-                  <Field label="お名前" required>
-                    <input name="name" required className={inputCls} placeholder="未来 太郎" />
-                  </Field>
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <Field label="メールアドレス" required>
-                    <input name="email" type="email" required className={inputCls} placeholder="you@example.com" />
-                  </Field>
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <Field label="電話番号">
-                    <input name="phone" className={inputCls} placeholder="090-0000-0000" />
-                  </Field>
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <Field label="保有物件・家賃収入の規模">
-                    <select name="規模" className={`${inputCls} appearance-none`} defaultValue="">
-                      <option value="" className="bg-navy-900">
-                        選択してください
-                      </option>
-                      <option className="bg-navy-900">〜1,000 万円／年</option>
-                      <option className="bg-navy-900">1,000〜3,000 万円／年</option>
-                      <option className="bg-navy-900">3,000〜5,000 万円／年</option>
-                      <option className="bg-navy-900">5,000 万円／年 以上</option>
-                    </select>
-                  </Field>
-                </div>
-                <div className="col-span-2">
-                  <Field label="ご相談内容" required>
-                    <textarea
-                      name="message"
-                      rows={4}
-                      required
-                      className={inputCls}
-                      placeholder={`「${CONTACT_TABS[tab].label}」について相談したい内容をご記入ください。`}
-                    ></textarea>
-                  </Field>
-                </div>
+              <div className="col-span-2 flex items-center gap-3 opacity-60">
+                <input type="checkbox" id="agree" disabled className="w-4 h-4 accent-gold" />
+                <label htmlFor="agree" className="font-zen text-[12px] text-navy-100/70">
+                  プライバシーポリシーに同意します
+                </label>
+              </div>
 
-                {/* hCaptcha (Method A: Web3Forms proxy)。env がある時のみ表示 */}
-                {hasWeb3Forms && (
-                  <div className="col-span-2">
-                    <div className="h-captcha" data-captcha="true"></div>
-                  </div>
-                )}
+              <div className="col-span-2">
+                <Btn
+                  as="button"
+                  type="button"
+                  variant="gold"
+                  size="lg"
+                  className="w-full opacity-60 pointer-events-none"
+                  icon="send"
+                >
+                  サンプル表示のため送信できません
+                </Btn>
+              </div>
+            </form>
 
-                <div className="col-span-2 flex items-center gap-3">
-                  <input type="checkbox" id="agree" required className="w-4 h-4 accent-gold" />
-                  <label htmlFor="agree" className="font-zen text-[12px] text-navy-100/70">
-                    <a href="/tax/legal/privacy" className="underline hover:text-white">
-                      プライバシーポリシー
-                    </a>
-                    に同意します
-                  </label>
-                </div>
-
-                {!hasWeb3Forms && (
-                  <div className="col-span-2 border border-gold/30 bg-gold/[0.06] px-4 py-3">
-                    <p className="font-zen text-[12.5px] text-gold-light leading-relaxed">
-                      ⚙️ 送信機能は準備中です（Web3Forms 未設定）。公開時に有効化されます。
-                    </p>
-                  </div>
-                )}
-
-                {status === "error" && (
-                  <p className="col-span-2 font-zen text-[13px] text-red-300">{errorMessage}</p>
-                )}
-
-                <div className="col-span-2">
-                  <Btn
-                    as="button"
-                    type="submit"
-                    variant="gold"
-                    size="lg"
-                    className={`w-full ${!hasWeb3Forms || status === "submitting" ? "opacity-60 pointer-events-none" : ""}`}
-                    icon="send"
-                  >
-                    {status === "submitting" ? "送信中…" : "この内容で無料相談を申し込む"}
-                  </Btn>
-                </div>
-              </form>
-            )}
+            {/* AI STUDIO 誘導 CTA (大きく目立つ) */}
+            <div className="mt-7 pt-7 border-t border-white/10">
+              <p className="font-zen text-[13px] text-navy-100/70 text-center mb-4">
+                実際にサイト制作をご相談されたい方は、 こちらへ
+              </p>
+              <a
+                href={`${AI_STUDIO_URL}#contact`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-3 bg-gold text-navy-900 font-mincho text-[16px] py-4 hover:bg-gold-light transition-colors group"
+              >
+                <span>zuk-zuk AI STUDIO で相談する</span>
+                <Icon name="arrowUR" className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Web3Forms hCaptcha proxy スクリプト (Method A) */}
-      {hasWeb3Forms && <Script src="https://web3forms.com/client/script.js" strategy="afterInteractive" />}
     </Section>
   );
 }
