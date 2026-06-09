@@ -257,16 +257,18 @@ export const VOICES = [
 ];
 ```
 
-### 07. Access
+### 07. Access ⭐ Google Map 統合 (強調機能 #4)
 
-**目的**: 「行きやすそう」 と感じさせる。
+**目的**: 「行きやすそう」 と感じさせる + SAMPLES_PLAN.md の強調機能 ④ Google Map を実装。
 
 **構成**:
 - セクション番号: `07 / ACCESS`
 - 見出し: 「Access」
-- 左カラム: 住所 + 電話 + 営業時間 + 定休日
-- 右カラム: 外観写真 1 枚 (`/images/salon/exterior.jpg`、 縦長 or 正方形)
-  - 当面 Google Map iframe は使わない (サンプルなので外観写真で代替)
+- 上段: 住所 + 電話 + 営業時間 + 定休日 + 外観写真 1 枚 (`/images/salon/exterior.jpg`)
+- 下段: **Google Map iframe (横幅 100%、 高さ 400-500px)**
+  - 武蔵小杉駅周辺の地図 (architcureural 住所は架空、 表示は駅周辺中心)
+  - embed URL は Google Maps「共有」→「地図を埋め込む」 で取得
+  - レスポンシブ対応 (`aspect-[16/9]` ラッパー)
 
 **データ例**:
 ```ts
@@ -276,8 +278,14 @@ export const ACCESS = {
   phone: "044-1234-5678",
   hours: "10:00 - 19:00 (最終受付 17:30)",
   closed: "月曜日 / 第 3 火曜日",
+  // 武蔵小杉駅周辺、 zoom 16 程度、 architectural 住所は架空のため駅中心
+  mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3247.123!2d139.659!3d35.576!2m3...",
 };
 ```
+
+**注意**:
+- 実 embed URL は CLI 自走中に Google Maps から取得 or プレースホルダで実装し、 後で差し替え可能に
+- iframe は loading="lazy", referrerPolicy="no-referrer-when-downgrade", allowFullScreen で実装
 
 ### 08. FAQ
 
@@ -293,6 +301,49 @@ export const ACCESS = {
   - 「駐車場はありますか?」
   - 「初めてですが大丈夫?」
   - 「クレジットカードは使えますか?」
+
+### 08-2. LINE バナー (Footer に組み込み) ⭐ 強調機能 #2
+
+**目的**: SAMPLES_PLAN.md の強調機能 ② LINE 公式アカウント連携を実装。
+
+**構成**:
+- Footer の上部 (Contact の上 or Footer 内 1 段目) に LINE バナー
+- レイアウト:
+  ```
+  [LINE 緑バナー 全幅]
+   左: 「LINE でお気軽にご連絡を」 + 説明文 「ご予約・お問い合わせ・スタイル相談まで」
+   右: QR コード画像 (placeholder) + 「友だち追加」 ボタン
+  ```
+- カラー: LINE 公式緑 (`#06C755`) + ホワイトテキスト
+- ボタンの挙動: **サンプル誘導モード** (disabled or click で「サンプル表示のため LINE 登録できません、 AI STUDIO へ」)
+- QR コード: placeholder (`/images/salon/sample-line-qr.png` プレースホルダ画像 or `<div>` でグレー枠)
+
+**実装例**:
+```tsx
+<section className="bg-[#06C755] py-12 md:py-16">
+  <div className="container grid md:grid-cols-2 gap-8 items-center">
+    <div className="text-white">
+      <p className="font-mincho text-[24px] md:text-[32px]">LINE でお気軽にご連絡を</p>
+      <p className="jp text-[14px] mt-3 opacity-90">ご予約・お問い合わせ・スタイル相談まで、 LINE でお気軽にどうぞ。</p>
+      <button
+        type="button"
+        disabled
+        className="mt-6 bg-white text-[#06C755] px-8 py-3 font-bold opacity-70 cursor-not-allowed"
+      >
+        ※ サンプル表示のため LINE 登録不可
+      </button>
+    </div>
+    <div className="flex justify-center">
+      {/* QR コード placeholder */}
+      <div className="w-40 h-40 bg-white/10 border-2 border-white/30 flex items-center justify-center text-white/50 text-sm">
+        QR Code<br/>(sample)
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+---
 
 ### 09. Contact (サンプル誘導型)
 

@@ -131,11 +131,23 @@ mkdir -p public/images/salon/works
    - 3-5 件カード横スクロール (mobile) / 縦 stack (desktop)
    - 各カード: 引用文 (Cormorant Garamond アクセント) + 客層 + 来店歴
 
-10. **B-10. SalonAccess.tsx** (07)
+10. **B-10. SalonAccess.tsx** (07) ⭐ **Google Map iframe 強調**
     - セクション番号 「07 / ACCESS」
     - 見出し「Access」
-    - 左カラム: 住所 + 駅 + 電話 + 営業時間 + 定休日
-    - 右カラム: 外観写真 (`/images/salon/exterior.jpg`、 aspect-[4/5])
+    - 上段: 住所 + 駅 + 電話 + 営業時間 + 定休日 + 外観写真 (`/images/salon/exterior.jpg`、 aspect-[4/5])
+    - **下段: Google Map iframe (全幅、 aspect-[16/9] 程度)**
+      - embed URL は武蔵小杉駅周辺 (架空住所、 駅中心ズーム)
+      - loading="lazy", allowFullScreen, referrerPolicy="no-referrer-when-downgrade"
+    - SAMPLES_PLAN.md 強調機能 ④ Google Map を実装
+
+10-2. **B-10-2. SalonLineBanner.tsx** ⭐ **LINE 公式連携 強調 (新規)**
+    - Footer の直前 (Contact の後 or Footer 内 1 段目) に LINE バナー実装
+    - 全幅、 LINE 緑 `#06C755` 背景
+    - 左: 「LINE でお気軽にご連絡を」 + 説明 + 「友だち追加」 ボタン (disabled)
+    - 右: QR コード placeholder (グレー枠 + 「QR Code (sample)」 テキスト)
+    - サンプル誘導モード適用 (clickable disabled、 「サンプル表示のため LINE 登録不可」)
+    - SAMPLES_PLAN.md 強調機能 ② LINE 公式 を実装
+    - 詳細は `sample-salon-design-brief.md` Section 08-2 参照
 
 11. **B-11. SalonFaq.tsx** (08)
     - セクション番号 「08 / FAQ」
