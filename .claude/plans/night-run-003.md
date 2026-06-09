@@ -17,6 +17,19 @@
 - [ ] `.env.local` の `NEXT_PUBLIC_SITE_URL` を `http://localhost:3004` に設定済み (税理士と共通)
 - [ ] dev server 停止中 (CLI が起動するため)
 
+### 🎨 Claude Design 成果物 (重要)
+
+設計書 + 以下の Claude Design カンプを必ず参照すること:
+
+- **HTML カンプ**: `.claude/plans/claude-design-salon/index.html`
+- **CSS デザイントークン**: `.claude/plans/claude-design-salon/styles.css`
+- **スクショ参考画像 6 枚**: `.claude/plans/claude-design-salon/uploads/`
+
+→ 設計書 (`sample-salon-design-brief.md`) は Claude Design に合わせて 2026-06-09 更新済み (Stylists 名 Aoi/Rin/Nao + タグ機能 / Voice 2x2 グリッド + 星評価 / About 見出し + キャプション 等)。
+→ レイアウト・余白・タイポグラフィの細部は Claude Design のカンプを「正典」 として参照。 Tailwind v4 で再構築 (Tailwind クラスへの変換は CLI が行う)。
+→ HTML カンプにある `style="width: 40px"` 等の inline スタイル臭はバグ、 無視して CSS で正しく実装。
+→ LINE バナー + Google Map iframe は Claude Design に未実装、 設計書 Section 07 / 08-2 を見て CLI が新規実装。
+
 ### CLI 起動コマンド (user 実行)
 
 ```bash

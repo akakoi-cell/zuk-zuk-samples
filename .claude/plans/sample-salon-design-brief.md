@@ -85,18 +85,20 @@ src/sanity/schemas/
 
 **目的**: ファーストビューでブランド世界観を伝える、 lamune と同じ「テキスト主役」 構成。
 
-**構成**:
-- 左 (or 中央): ロゴ大「**& moi**」 (Cormorant Garamond)
-- メインコピー (Hero コピー 案 2):
+**構成 (Claude Design 採用)**:
+- 上部 location 表記: 「**Kanagawa ・ Musashi-Kosugi**」 (eyebrow 風、 DM Sans small caps、 muted)
+- 中央: ロゴ大「**& moi**」 (Cormorant Garamond) — アンパサンドはイタリックで強調
+- メインコピー (案 2):
   ```
   住宅街の角、 ヴィンテージの椅子が並ぶ小さなサロン。
   窓辺のドライフラワー、 古い雑誌、 ゆるやかに流れるジャズ。
   ここに来る日は、 髪のためというより、 私のための時間。
-  「& moi」 ── 「と私」 の、 ささやかな約束です。
   ```
+- (任意) 4 行目: 「『& moi』 ── 『と私』 の、 ささやかな約束です。」 (Claude Design は省略、 採用するかは実装時判断)
 - 背景画像: `/images/salon/hero.jpg` (店舗外観 or 入口、 16:9、 やわらかな自然光)
-- 画像にオーバーレイ (rgba(250, 250, 248, 0.7)) でテキスト視認性確保
-- セクション番号: `01 / HOME`
+- 画像にスクリム (rgba(0,0,0,0.3)) でテキスト視認性確保
+- 下部: 「Scroll」 + 縦バー (Claude Design 採用、 lamune 風スクロール誘導)
+- セクション番号: なし (Hero のみ番号なし、 About 以降 01 / 02 ... と振り直し or 01 / Home として表記)
 
 ### 02. About (インテリア強調、 店主写真なし)
 
@@ -116,7 +118,16 @@ src/sanity/schemas/
   - 1. `/images/salon/interior-1.jpg` (店内全景、 自然光、 ヴィンテージ家具)
   - 2. `/images/salon/interior-2.jpg` (セット面のクローズアップ、 鏡 + 道具)
   - 3. `/images/salon/interior-3.jpg` (ドライフラワー + 雑誌)
-  - 4. `/images/salon/interior-4.jpg` (窓辺の植物 + ジャズが流れそうな雰囲気)
+  - 4. `/images/salon/interior-4.jpg` (ディテール / 古書と照明)
+
+> **2026-06-09 Claude Design 採用追記**:
+> - セクション番号は `01 / About` (eyebrow 形式、 italic 番号) に変更 (Hero は番号なし)
+> - 見出しを 「**家でもない、職場でもない、 もう一つの居場所を。**」 に差し替え (「もう一つの居場所」 だけ em 強調)
+> - リード文 (「& moi は、 武蔵小杉の…」) は **不要** (見出しのインパクトだけで成立)
+> - 下部キャプション (左右配置) 追加:
+>   - 左: 「**Interior ── 4 seats / 12 chairs**」 (席数 4 に修正、 椅子 12 含む待合等)
+>   - 右: 「**Photo 4 / 4**」 (写真カウンタ)
+> - 4 枚の被写体は Claude Design に合わせて: 1. 店内待合のソファ / 2. 窓辺のドライフラワー / 3. セット面アンティーク鏡 / 4. ディテール (古書と照明)
 
 ### 03. Stylists (スタッフ 3 名)
 
@@ -133,32 +144,40 @@ src/sanity/schemas/
   - 日本名: Zen Kaku Gothic New
   - プロフィール短文 (2-3 行)
 
-**データ例** (`salon-content.ts`):
+**データ例** (`salon-content.ts`) — **Claude Design 採用版 (2026-06-09 更新)**:
 ```ts
+// セクションタイトル: 「髪を整える人であり、その日の聞き役でもある。」
 export const STYLISTS = [
   {
-    role: "Owner Stylist",
-    enName: "MARIKO YAMADA",
-    jaName: "山田 真理子",
+    role: "Owner / Stylist",
+    enName: "Aoi",
+    jaName: "葵",
     image: "/images/salon/staff-1.jpg",
-    profile: "都内大型サロン副店長を経て 2018 年に & moi を開店。 4D カット技術を提唱し、 一人一人の骨格と髪質に寄り添うカットを大切にしています。",
+    profile: "骨格と髪質を見極めた「ほどける」カットが得意。 肩肘張らない時間づくりを何より大切にしています。",
+    tags: ["Cut", "Short", "Design Color"],
   },
   {
     role: "Stylist",
-    enName: "AIKA SUZUKI",
-    jaName: "鈴木 愛佳",
+    enName: "Rin",
+    jaName: "凛",
     image: "/images/salon/staff-2.jpg",
-    profile: "オーガニックカラー専門、 ハーブの香りに包まれる時間を提案します。 趣味は陶芸とコーヒー。",
+    profile: "透明感のあるカラーと、 伸びても崩れない設計が信条。 なりたい色を一緒に探す時間を大事にします。",
+    tags: ["Color", "Highlight", "Gray Care"],
   },
   {
-    role: "Stylist",
-    enName: "YUTO TANAKA",
-    jaName: "田中 悠人",
+    role: "Stylist / Spa",
+    enName: "Nao",
+    jaName: "奈緒",
     image: "/images/salon/staff-3.jpg",
-    profile: "メンズカット・ショートカット得意、 ナチュラルで再現性のあるスタイルを心がけています。",
+    profile: "ヘッドスパとトリートメントの担当。 頭皮から整える心地よさで、 眠ってしまうお客様も。",
+    tags: ["Head Spa", "Treatment", "Care"],
   },
 ];
 ```
+
+**UI 詳細 (Claude Design 採用)**:
+- セクションタイトル h2: 「**髪を整える人であり、 その日の聞き役でもある。**」 (上品なコピー、 一部に alt スタイル)
+- 各カード: 顔写真 (3:4 縦) + role (英、 灰色) + enName (大、 Cormorant Garamond italic) + jaName (一字漢字、 小) + bio (3 行) + tags (横並びチップ)
 
 ### 04. Menu
 
@@ -232,28 +251,50 @@ export const MENU = [
 - データソース: **Sanity の `salonWork` スキーマ** (env 未設定時はハードコード fallback)
 - 各画像 click で詳細モーダル (任意、 試行 #3 では省略可)
 
-### 06. Voice (お客様の声)
+### 06. Voice (お客様の声) — Claude Design 採用版
 
 **目的**: 「親しまれてる感」 を出す、 信頼性補完。
 
-**構成**:
-- セクション番号: `06 / VOICE`
-- 見出し: 「お客様の声」
-- 3-5 件のレビューカード (横スクロール or 縦 stack)
-- 各カード:
-  - レビュー本文 (引用風、 セリフフォント)
-  - 客層属性 (例: 「34歳 / 会社員 / 武蔵小杉在住」)
-  - 来店歴 (例: 「来店歴 2 年」)
+**構成 (Claude Design 採用)**:
+- セクション番号: `05 / Voice` (eyebrow)
+- 大見出し: 「**通ってくださる方の、 小さな声。**」 (Zen Kaku、 控えめサイズ)
+- **2x2 グリッドで 4 件カード** (mobile は縦 stack)
+- 各カード (生成り `--card` 背景、 余白広め):
+  - 上: 大きな引用符「**"**」 (Cormorant Garamond)
+  - 中: レビュー本文 (3-4 行)
+  - 下: イニシャル + 年齢 + 職業 + 星評価 (例: 「Y.K さん ・ 38 ・ 会社員 ★ ★ ★ ★ ★」)
 
-**データ例**:
+**データ例 (Claude Design 採用)**:
 ```ts
 export const VOICES = [
   {
-    quote: "「ここでカットしてもらった日は、 帰ってからずっと鏡を見ています。 髪が軽くなると気持ちも軽くなる、 そんなサロンです。」",
-    profile: "34歳 / 会社員 / 武蔵小杉在住",
-    history: "来店歴 2 年",
+    quote: "子育ての合間に、 ここだけは「自分のための時間」。 雑誌をめくりながらのスパで、 いつの間にか眠ってしまいました。 次の予定がない日に行くのがおすすめです。",
+    initial: "Y.K",
+    age: 38,
+    occupation: "会社員",
+    rating: 5,
   },
-  // ... 他 4 件
+  {
+    quote: "派手すぎず、 でもちゃんと垢抜ける。「こうしたい」 が言葉にならなくても、 丁寧に汲み取ってくれます。 インテリアも好みで、 毎回少し長居してしまう。",
+    initial: "S.A",
+    age: 33,
+    occupation: "デザイナー",
+    rating: 5,
+  },
+  {
+    quote: "白髪が気になり始めた年代ですが、「ぼかす」 提案をしてもらえて、 染めている感じがしないのが嬉しい。 家から歩いて通えるのも続けられる理由です。",
+    initial: "M.T",
+    age: 45,
+    occupation: "自営業",
+    rating: 5,
+  },
+  {
+    quote: "美容院が少し苦手でしたが、 ここは静かで、 無理に話しかけられないのが心地いい。 仕事帰りに寄れる時間で開いているのも助かっています。",
+    initial: "R.N",
+    age: 41,
+    occupation: "看護師",
+    rating: 4,
+  },
 ];
 ```
 
