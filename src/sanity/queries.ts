@@ -1,5 +1,8 @@
 import { sanityClient, hasSanity } from "./client";
+import { urlFor } from "./lib/image";
 import { WORKS, COLUMNS } from "@/lib/tax-content";
+import { GALLERY_FALLBACK, type GalleryItem } from "@/lib/salon-content";
+import type { SanityImageSource } from "@sanity/image-url";
 
 // TaxWorks が期待する形
 export type TaxWorkView = {
@@ -58,5 +61,33 @@ export async function getTaxColumns(): Promise<TaxColumnView[]> {
     return rows.map((r) => ({ ...r, date: toDotDate(r.date) }));
   } catch {
     return COLUMNS;
+  }
+}
+
+// ============================================================
+// Salon — 施術事例ギャラリー (salonWork)
+// ============================================================
+type SalonWorkRow = { title: string; category?: string; image?: SanityImageSource };
+
+const SALON_WORKS_QUERY = `*[_type == "salonWork"] | order(order asc, _createdAt desc)[0...16]{
+  title, category, image
+}`;
+
+/** 施術事例ギャラリー。Sanity 未設定 or 0 件なら GALLERY_FALLBACK を返す。 */
+export async function getSalonWorks(): Promise<GalleryItem[]> {
+  if (!hasSanity) return GALLERY_FALLBACK;
+  try {
+    const rows = await sanityClient.fetch<SalonWorkRow[]>(
+      SALON_WORKS_QUERY,
+      {},
+      { next: { revalidate: 60, tags: ["salonWork"] } }
+    );
+    if (!rows || rows.length === 0) return GALLERY_FALLBACK;
+    return rows.map((r) => ({
+      ph: r.title || r.category || "Style",
+      image: r.image ? urlFor(r.image).width(600).height(600).fit("crop").url() : undefined,
+    }));
+  } catch {
+    return GALLERY_FALLBACK;
   }
 }
