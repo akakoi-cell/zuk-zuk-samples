@@ -11,7 +11,14 @@ export function SalonHero() {
           <h1 className="hero__logo">
             <span className="amp">&amp;</span>moi
           </h1>
-          <p className="hero__copy">{HERO_COPY}</p>
+          <p className="hero__copy">
+            {HERO_COPY.map((line, i) => (
+              <span key={i}>
+                {i > 0 && <br />}
+                {line}
+              </span>
+            ))}
+          </p>
         </div>
         <div className="hero__right">
           <div className="ph" data-ph="店内全景 ・ ヴィンテージの椅子と窓辺">
