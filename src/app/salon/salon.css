@@ -199,43 +199,110 @@
 .salon-root .msheet a .mnum { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--sub); }
 
 /* ============================================================
-   01 — Hero
+   01 — Hero  (lamune-kyoto.com 風 2 カラム / 画像を背景いっぱいにしない)
    ============================================================ */
-.salon-root .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; overflow: hidden; }
-.salon-root .hero__bg { position: absolute; inset: 0; }
-.salon-root .hero__bg .ph { width: 100%; height: 100%; border: none; }
-.salon-root .hero__scrim {
-  position: absolute; inset: 0;
-  background: linear-gradient(105deg, rgba(20,17,13,.62) 0%, rgba(20,17,13,.28) 42%, rgba(20,17,13,.08) 100%);
+.salon-root .hero {
+  position: relative;
+  height: 100svh;  /* 明示的に画面全高、 余白防止 */
+  padding: 0;  /* globals.css の .hero { padding: calc(72px+96px) 0 120px } を上書き */
+  background: var(--bg);
+  overflow: hidden;
 }
-.salon-root .hero__inner { position: relative; width: 100%; padding-block: clamp(60px,9vw,118px); }
+/* hero__inner を grid 化、 高さは hero に追従 */
+.salon-root .hero__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4fr 6fr;  /* 左テキスト 40% : 右画像 60% */
+  width: 100%;
+  height: 100%;
+}
+/* 左右カラム両方に明示的に 100svh の高さを指定 (grid row auto 回避) */
+.salon-root .hero__left {
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;  /* 上に loc、 下に logo+copy */
+  padding: clamp(24px, 3vw, 48px) clamp(28px, 5vw, 88px) clamp(48px, 7vw, 110px);
+  position: relative;
+  box-sizing: border-box;  /* padding を高さに含めて overflow 防止 */
+}
+.salon-root .hero__right {
+  height: 100svh;
+  position: relative;
+  overflow: hidden;
+  background: var(--card);  /* 画像未配置時の placeholder 色 */
+}
+.salon-root .hero__right .ph {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.salon-root .hero__right img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
 .salon-root .hero__loc {
   display: flex; align-items: center; gap: 14px;
   font-family: var(--en); font-size: 12px; letter-spacing: .3em; text-transform: uppercase;
-  color: rgba(255,255,255,.82); margin-bottom: 34px;
+  color: var(--sub);
 }
-.salon-root .hero__loc::before { content: ""; width: 34px; height: 1px; background: rgba(255,255,255,.6); }
+.salon-root .hero__loc::before { content: ""; width: 34px; height: 1px; background: var(--line); }
+
+/* ロゴ + コピーをまとめるラッパー (下寄せ) */
+.salon-root .hero__left > h1.hero__logo,
+.salon-root .hero__left > p.hero__copy { /* flex item として下方向にぴったり並ぶ */ }
 .salon-root .hero__logo {
   font-family: var(--en); font-weight: 500;
-  font-size: clamp(78px,17vw,224px); line-height: .86; letter-spacing: -.01em;
-  color: #fff; display: flex; align-items: baseline; gap: .06em;
+  font-size: clamp(64px, 11vw, 168px); line-height: .86; letter-spacing: -.01em;
+  color: var(--text); display: flex; align-items: baseline; gap: .06em;
 }
-.salon-root .hero__logo .amp { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 1.05em; }
+.salon-root .hero__logo .amp {
+  font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 1.05em;
+  color: var(--accent);
+}
 .salon-root .hero__copy {
-  margin-top: 38px; max-width: 40ch;
-  color: rgba(255,255,255,.92);
-  font-size: clamp(14px,1.15vw,16px); line-height: 2.2; font-weight: 300;
+  margin-top: 38px; max-width: 42ch;
+  color: var(--text);
+  font-size: clamp(13px, 1vw, 15px); line-height: 2.2; font-weight: 300;
   letter-spacing: .05em; text-wrap: pretty;
 }
-.salon-root .hero__copy .pact { display: block; margin-top: 16px; font-family: var(--serif); font-style: italic; font-size: 1.12em; color: #fff; letter-spacing: .02em; }
+.salon-root .hero__copy .pact {
+  display: block; margin-top: 16px;
+  font-family: var(--serif); font-style: italic; font-size: 1.12em;
+  color: var(--accent); letter-spacing: .02em;
+}
 .salon-root .hero__scroll {
-  position: absolute; right: var(--gut); bottom: clamp(28px,5vw,54px);
+  position: absolute; right: clamp(20px, 3vw, 40px); bottom: clamp(28px, 5vw, 54px);
   display: flex; flex-direction: column; align-items: center; gap: 12px;
   font-family: var(--en); font-size: 10px; letter-spacing: .26em; text-transform: uppercase;
-  color: rgba(255,255,255,.75); writing-mode: vertical-rl;
+  color: rgba(255,255,255,.85); writing-mode: vertical-rl;
+  z-index: 2;
 }
 .salon-root .hero__scroll .bar { writing-mode: horizontal-tb; width: 1px; height: 60px; background: linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,0)); animation: salon-drip 2.4s var(--ease) infinite; }
 @keyframes salon-drip { 0%{transform:scaleY(0);transform-origin:top} 45%{transform:scaleY(1);transform-origin:top} 55%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+/* モバイル: 縦 stack (画像が上、 テキストが下) */
+@media (max-width: 768px) {
+  .salon-root .hero__inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60vh auto;
+  }
+  .salon-root .hero__right {
+    order: 0;  /* 画像が先 */
+  }
+  .salon-root .hero__left {
+    justify-content: flex-start;
+    padding: clamp(40px, 8vw, 70px) clamp(20px, 5vw, 40px) clamp(60px, 10vw, 90px);
+  }
+  .salon-root .hero__loc {
+    position: static;
+    margin-bottom: 28px;
+  }
+  .salon-root .hero__scroll { display: none; }
+}
 
 /* ============================================================
    02 — About  (4-square interior grid)
