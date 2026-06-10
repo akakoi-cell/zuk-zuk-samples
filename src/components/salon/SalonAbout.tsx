@@ -1,8 +1,10 @@
 import { Eyebrow, Ph } from "./ui";
 import { ABOUT } from "@/lib/salon-content";
 
-// 02 — About。見出し (「もう一つの居場所」だけ強調) + インテリア 4 枚正方形グリッド。
+// 02 — About。見出し (「もう一つの居場所」だけ強調) + インテリア 3 枚の非対称レイアウト。
+// 左に大きな縦長 1 枚、右に横長 + 正方を縦に積み、右カラムを下げて非対称に。
 export function SalonAbout() {
+  const [main, sideTop, sideBottom] = ABOUT.images;
   return (
     <section className="section" id="about" data-screen-label="02 About">
       <div className="wrap">
@@ -19,11 +21,17 @@ export function SalonAbout() {
         </div>
 
         <div className="about__grid rv">
-          {ABOUT.images.map((img, i) => (
-            <div className="cell" key={i}>
-              <Ph label={img.ph} src={undefined} />
+          <div className="cell cell--main">
+            <Ph label={main.ph} src={undefined} />
+          </div>
+          <div className="about__side">
+            <div className="cell cell--wide">
+              <Ph label={sideTop.ph} src={undefined} />
             </div>
-          ))}
+            <div className="cell cell--sq">
+              <Ph label={sideBottom.ph} src={undefined} />
+            </div>
+          </div>
         </div>
         <div className="about__caption rv">
           <span>{ABOUT.captionLeft}</span>

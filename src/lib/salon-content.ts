@@ -57,12 +57,12 @@ export const ABOUT = {
   headEm: "もう一つの居場所",
   headAfter: "を。",
   captionLeft: "Interior ── 4 seats / 12 chairs",
-  captionRight: "Photo 4 / 4",
+  captionRight: "Photo 3 / 3",
+  // 非対称レイアウト: [0]=左の大きな縦長 / [1]=右上の横長 / [2]=右下の正方
   images: [
     { src: "/images/salon/interior-1.jpg", ph: "店内 ／ 待合のソファ" },
     { src: "/images/salon/interior-2.jpg", ph: "窓辺 ／ ドライフラワー" },
     { src: "/images/salon/interior-3.jpg", ph: "セット面 ／ アンティーク鏡" },
-    { src: "/images/salon/interior-4.jpg", ph: "ディテール ／ 古書と照明" },
   ],
 } as const;
 
