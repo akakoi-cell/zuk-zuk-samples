@@ -443,12 +443,15 @@
 /* ============================================================
    08-2 — LINE banner  (強調機能 #2)
    ============================================================ */
-.salon-root .line-banner { background: #06C755; padding: clamp(44px,6vw,72px) 0; }
+/* LINE バナー: 公式緑 #06C755 はサイトの土系トーンに対し鮮やかすぎるため、
+   サイト sub 緑 (#7D8A6E) と調和する muted な深緑に統一 (白文字コントラスト ~5.4 確保)。
+   サンプル誘導モードのため公式緑そのものは不要。 */
+.salon-root .line-banner { background: #52735E; padding: clamp(44px,6vw,72px) 0; }
 .salon-root .line-banner__grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px,4vw,56px); align-items: center; }
 .salon-root .line-banner__head { font-family: var(--jp); font-weight: 500; color: #fff; font-size: clamp(22px,2.6vw,30px); line-height: 1.5; letter-spacing: .04em; display: flex; align-items: center; gap: 14px; }
-.salon-root .line-banner__head .lico { width: 34px; height: 34px; border-radius: 8px; background: #fff; color: #06C755; display: inline-flex; align-items: center; justify-content: center; font-family: var(--en); font-weight: 700; font-size: 15px; letter-spacing: .02em; flex: none; }
+.salon-root .line-banner__head .lico { width: 34px; height: 34px; border-radius: 8px; background: #fff; color: #52735E; display: inline-flex; align-items: center; justify-content: center; font-family: var(--en); font-weight: 700; font-size: 15px; letter-spacing: .02em; flex: none; }
 .salon-root .line-banner__body { margin-top: 16px; color: rgba(255,255,255,.92); font-size: 14px; line-height: 2; max-width: 40ch; }
-.salon-root .line-banner__btn { margin-top: 26px; display: inline-flex; align-items: center; gap: 10px; background: #fff; color: #06C755; font-family: var(--jp); font-weight: 700; font-size: 14px; letter-spacing: .04em; padding: 14px 28px; border: none; border-radius: 999px; opacity: .72; cursor: not-allowed; }
+.salon-root .line-banner__btn { margin-top: 26px; display: inline-flex; align-items: center; gap: 10px; background: #fff; color: #52735E; font-family: var(--jp); font-weight: 700; font-size: 14px; letter-spacing: .04em; padding: 14px 28px; border: none; border-radius: 999px; opacity: .72; cursor: not-allowed; }
 .salon-root .line-banner__note { margin-top: 12px; font-family: var(--en); font-size: 11px; letter-spacing: .12em; color: rgba(255,255,255,.82); }
 .salon-root .line-banner__qr { justify-self: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .salon-root .line-banner__qrbox { width: 160px; height: 160px; background: rgba(255,255,255,.1); border: 2px dashed rgba(255,255,255,.4); border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center; color: rgba(255,255,255,.7); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; line-height: 1.7; }
