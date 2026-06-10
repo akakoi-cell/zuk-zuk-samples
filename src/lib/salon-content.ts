@@ -60,9 +60,9 @@ export const ABOUT = {
   captionRight: "Photo 3 / 3",
   // 非対称レイアウト: [0]=左の大きな縦長 / [1]=右上の横長 / [2]=右下の正方
   images: [
-    { src: "/images/salon/interior-1.jpg", ph: "店内 ／ 待合のソファ" },
-    { src: "/images/salon/interior-2.jpg", ph: "窓辺 ／ ドライフラワー" },
-    { src: "/images/salon/interior-3.jpg", ph: "セット面 ／ アンティーク鏡" },
+    { src: "/images/salon/interior-1.jpg", ph: "アンティーク鏡 ／ こだわりの椅子越し" },
+    { src: "/images/salon/interior-2.jpg", ph: "窓辺 ／ アンティークのレコード越し" },
+    { src: "/images/salon/exterior.jpg", ph: "外観" },
   ],
 } as const;
 
