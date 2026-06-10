@@ -223,7 +223,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;  /* 上に loc、 下に logo+copy */
-  padding: clamp(24px, 3vw, 48px) clamp(28px, 5vw, 88px) clamp(48px, 7vw, 110px);
+  /* 上 padding は常時 solid ヘッダー (高さ ~64px) を avoid して eyebrow が被らないよう確保 */
+  padding: clamp(88px, 9vw, 120px) clamp(28px, 5vw, 88px) clamp(48px, 7vw, 110px);
   position: relative;
   box-sizing: border-box;  /* padding を高さに含めて overflow 防止 */
 }
@@ -287,14 +288,23 @@
 
 /* モバイル: 縦 stack (画像が上、 テキストが下) */
 @media (max-width: 768px) {
+  /* base の height:100svh / overflow:hidden を解除し、 画像 60vh + テキスト auto を素直に積む */
+  .salon-root .hero {
+    height: auto;
+    overflow: visible;
+  }
   .salon-root .hero__inner {
     grid-template-columns: 1fr;
-    grid-template-rows: 60vh auto;
+    grid-template-rows: auto auto;
+    height: auto;
   }
   .salon-root .hero__right {
-    order: 0;  /* 画像が先 */
+    order: -1;  /* 画像を先頭に (hero__left も order:0 のため 0 では効かず -1 が必要)。
+                   画像が上に来ることで、 下に並ぶ text+eyebrow が固定ヘッダーに被らない */
+    height: 60vh;  /* base の 100svh を上書き (grid row からはみ出してテキストに被るのを防ぐ) */
   }
   .salon-root .hero__left {
+    height: auto;  /* base の 100svh を上書き */
     justify-content: flex-start;
     padding: clamp(40px, 8vw, 70px) clamp(20px, 5vw, 40px) clamp(60px, 10vw, 90px);
   }

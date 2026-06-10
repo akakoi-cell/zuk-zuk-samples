@@ -1,29 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Brand } from "./ui";
 import { SALON_NAV } from "@/lib/salon-content";
 
-// Claude Design の header スクリプトを React 化:
-// Hero 上では透過 (hdr--hero、白文字)、スクロールで solid (背景ぼかし) に切替。
+// ヘッダーは常時 solid 固定 (生成り背景 + 濃色テキスト)。
+// 分割 Hero (左=生成り / 右=写真) では透過白文字が左右どちらかで必ず読めなくなるため、
+// 透過 (hdr--hero) モードは廃止。詳細は salon.css の Header セクション参照。
 export function SalonHeader() {
-  const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const hero = document.getElementById("hero");
-    const onScroll = () => {
-      const threshold = hero ? hero.offsetHeight - 90 : 600;
-      setSolid(window.scrollY > threshold);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
     <>
-      <header className={`hdr ${solid ? "hdr--solid" : "hdr--hero"}`} id="hdr">
+      <header className="hdr hdr--solid" id="hdr">
         <Brand />
         <nav className="nav">
           {SALON_NAV.map((l) => (
