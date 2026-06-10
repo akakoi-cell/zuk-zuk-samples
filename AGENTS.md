@@ -53,14 +53,38 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 → 詳細は `../zuk-zuk-ai-studio/docs/CLIENT_PROJECT_FLOW.md` Phase 0 参照
 
-## ポート割当 (サンプル制作用)
+## 🌐 ZAS ポート割当 (2026-06-10 体系化)
 
-| ポート | 用途 |
+並行スレッドでの localhost バッティング防止のため、 案件ごとに番号体系を固定。
+
+### 3000 系: ZAS 本体・基盤
+
+| Port | 用途 |
 |---|---|
-| 3001 | template 動作確認 |
+| 3000 | **ZAS サイト** (zuk-zuk-ai-studio) |
+| 3001 | template (動作確認) |
 | 3002 | tax-gemini (旧、 比較用) |
 | 3003 | tax-claude-design (旧、 比較用) |
-| 3004 | zuk-zuk-samples (本番、 税理士サンプル含む) |
+| 3004 | **zuk-zuk-samples** (全サンプル共通 1 dev server) |
+
+### 3010 系: クライアント案件 (各リポジトリで dev server)
+
+| Port | 用途 |
+|---|---|
+| 3010 | SALOON WELL (bar-saloon-well) |
+| 3011 | Support link |
+| 3012 | Hello Tree (英会話スクール) |
+| 3013 | & moi (美容室クライアント案件) |
+| 3014 〜 | 新規案件は順次 |
+
+### 将来拡張
+- 3020 系 / 3100 系 — クライアント案件増加時
+- 3200 系 — その他
+
+### 📝 samples が単一 port (3004) で OK な理由
+- zuk-zuk-samples は 1 つの Next.js プロジェクトで、 全サンプル (/tax/, /salon/, /school/ 等) が同じルーティング
+- 各スレッドは別ディレクトリ (src/components/tax/* vs src/components/salon/*) を編集するので衝突なし
+- ブラウザは別タブで `localhost:3004/tax/` と `localhost:3004/salon/` を開けば並行確認可能
 
 ---
 
