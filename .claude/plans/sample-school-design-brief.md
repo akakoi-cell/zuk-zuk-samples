@@ -58,16 +58,20 @@
 
 ## 2. ファイル構成
 
+> ⭐ 会員機能（auth.ts / middleware.ts / login / api / lib/db）は `sample-school-membership-spec.md` Section 7 が正典。 以下は LP + デモページの骨子。
+
 ```
 src/app/school/
 ├── page.tsx                  # 全セクションをまとめる（LP 本体）
 ├── layout.tsx                # metadata, JSON-LD（EducationalOrganization / LocalBusiness schema）
 ├── opengraph-image.tsx       # OG 画像（中央 630x630 セーフ）
 ├── styles.css                # School サンプル専用 CSS 変数
+├── login/
+│   └── page.tsx              # ⭐ デモログイン（Auth.js Credentials「デモアカウントでログイン」）
 ├── mypage/
-│   └── page.tsx              # ⭐ 会員マイページのモック（静的デモ）
+│   └── page.tsx              # ⭐ 会員マイページ（要ログイン、 middleware で gate）
 ├── lessons/
-│   └── page.tsx              # ⭐ 会員限定コンテンツのモック（動画/PDF 一覧、 一部ロック）
+│   └── page.tsx              # ⭐ 会員限定コンテンツ（動画/PDF 一覧、 member は 🔒）
 └── legal/
     ├── privacy/page.tsx      # プライバシーポリシー（税理士/美容室流用）
     ├── terms/page.tsx        # 利用規約（簡易）
@@ -253,6 +257,10 @@ export const TEACHERS = [
 
 ### 06. Membership ⭐（会員マイページ ＆ おうち学習）
 
+> 📐 **仕様の正典**: 会員機能の仕様・実装方法は `sample-school-membership-spec.md` に集約。
+> 確定スタック = **Auth.js (NextAuth v5) + Vercel Postgres + Cloudflare Stream + Stripe(本番のみ)**。
+> サンプル #69 は **薄い実認証つき**（デモログインで gate を実演、 決済なし）。 以下は LP 内セクションと 2 デモページの UI 設計。
+
 **目的**: SAMPLES_PLAN ③ の目玉 **会員マイページ + 会員限定コンテンツ** を「機能の見せ場」 として提示。 他サンプルにない差別化。
 
 **構成**:
@@ -262,13 +270,16 @@ export const TEACHERS = [
 - **2 枚のプレビューカード**（実画面のミニチュア or イラスト的モック）:
   - 左: 「📱 保護者マイページ」 — 出席スタンプ・レッスンレポート・進捗 → ボタン「マイページを見る（デモ）」 → `/school/mypage`
   - 右: 「🎬 おうち学習コンテンツ」 — 練習動画・英語の歌・宿題 PDF → ボタン「コンテンツを見る（デモ）」 → `/school/lessons`
-- 注記（小）: 「※ サンプルではデモ画面をご覧いただけます。 実際の会員サイトは Stripe サブスク決済 + 会員認証で構築します。」
+- 注記（小）: 「※ サンプルはデモアカウントでログインして体験できます。 実装では LINE ログイン + Stripe サブスク決済 + 限定配信で構築します。」
+- CTA: 「デモアカウントでログイン →」（`/school/login`、 薄い実認証で実際にログインできる）
 
-> このセクションは **強調機能のショーケース**。 デモページ（`/school/mypage`・`/school/lessons`）への動線がメイン。
+> このセクションは **強調機能のショーケース**。 デモログイン → mypage / lessons で「認可が本当に効く」 体験を見せるのがメイン。 詳細は `sample-school-membership-spec.md`。
 
-#### デモページ A: `/school/mypage`（会員マイページ・静的モック）
+#### デモページ A: `/school/mypage`（会員マイページ・**要ログイン**）
 
-- ヘッダー: 「こんにちは、 さくらママ 👋」 + ログアウト風ボタン（disabled）
+> 薄い実認証: 未ログインで開くと `/school/login` へ redirect（middleware）。 「デモアカウントでログイン」 で解錠。
+
+- ヘッダー: 「こんにちは、 さくらママ 👋」 + ログアウトボタン（実際に動く → 再度 gate）
 - カード群:
   - **お子さま情報**: 「ゆうとくん（Kinder コース・週1）」 アバター + 通学 8 ヶ月目
   - **出席スタンプ**: カレンダー風 or スタンプラリー風（🌟 が並ぶ、 今月 3/4 回出席）
@@ -284,9 +295,10 @@ export const TEACHERS = [
 - **コンテンツカードグリッド**（`grid sm:grid-cols-2 lg:grid-cols-3`）:
   - 各カード: サムネ（イラスト or 画像）+ タイトル + タイプアイコン + 所要時間
   - 例: 「Phonics Song "A-B-C"（動画 3:20）」 「Animal Flashcards（PDF）」 「Weekly Homework #12（PDF）」 「ぬりえ: Fruits（PDF）」
-  - **一部カードにロックアイコン 🔒**（「会員限定」 オーバーレイ）→ 非会員には鍵、 会員機能の存在を視覚化
+  - **一部カードにロックアイコン 🔒**（`accessLevel: member`）→ 未ログイン時は鍵 + 「ログインして見る」、 デモログイン後は解錠
+  - 再生/DL クリック → API（`/api/school/content/[id]/play|download`）が entitlement 確認 → 署名URL（本番）/ デモ配信
 - 上部に同じ **サンプル誘導バナー**
-- 注記: 「※ 動画・PDF は代表 Emily が制作したサンプルです。 実装ではミドルウェアで会員認証 + 限定公開します。」
+- 注記: 「※ 動画・PDF は代表 Emily が制作したサンプルです。 実装では Cloudflare Stream/R2 の署名URL で会員限定配信します。」
 
 ### 07. Voice（保護者の声）
 
@@ -510,13 +522,14 @@ export const schoolNews = defineType({
 ```
 Phase A: ディレクトリ + 依存 + デザイントークン（~30 分）
 Phase B: LP 全 12 セクション + Header/Footer 実装（~3-4h）
-Phase C: 会員デモページ 2 枚（mypage / lessons）実装 ⭐（~1-1.5h）
-Phase D: Sanity 連動（schoolNews + お知らせ）（~1h）
+Phase C: 会員機能（薄い実認証: Auth.js + middleware + mypage / lessons + API）⭐（~2-2.5h）
+Phase D: Sanity 連動（schoolNews + homeworkContent）（~1h）
 Phase E: SEO/OGP/法務ページ（~1h）
 Phase F: 動作確認 + 微調整（~30 分）
 ```
 
-合計想定 7-9 時間（CLI 夜間自走、 acceptEdits + caffeinate -i）
+合計想定 8-10 時間（CLI 夜間自走、 acceptEdits + caffeinate -i）
+会員機能の仕様詳細は `sample-school-membership-spec.md` を正典とする。
 
 ---
 

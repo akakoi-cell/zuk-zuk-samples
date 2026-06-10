@@ -15,6 +15,11 @@
   - hero.jpg / teacher-{emily,mike,aya}.jpg / lesson-1.jpg / exterior.jpg
 - [ ] Sanity プロジェクト準備済み（**税理士・美容室と同じプロジェクト `5synfpav` を流用**、 schema だけ分ける = `schoolNews` 追加）
 - [ ] `.env.local` の `NEXT_PUBLIC_SITE_URL` が `http://localhost:3004` に設定済み（税理士・美容室と共通）
+- [ ] 会員機能（薄い実認証）の env（`sample-school-membership-spec.md` Section 8）:
+  - [ ] `AUTH_SECRET`（`openssl rand -base64 32`）/ `AUTH_URL=http://localhost:3004`
+  - [ ] `SCHOOL_DEMO_MODE=true`（既定。 デモログイン + デモ配信）
+  - [ ] `POSTGRES_URL`（任意。 未設定ならインメモリ fallback で動く）
+  - [ ] Cloudflare Stream/R2・Stripe・LINE は**本番のみ**（サンプルは未設定でOK）
 - [ ] dev server 停止中（CLI が起動するため）
 
 ### 🎨 Claude Design 成果物（重要）
@@ -189,38 +194,67 @@ mkdir -p public/images/school/content
 
 ---
 
-## 3. Phase C: 会員デモページ実装（~1-1.5h）⭐ 試行 #4 の新規挑戦
+## 3. Phase C: 会員機能（薄い実認証）実装（~2-2.5h）⭐ 試行 #4 の新規挑戦
 
-> SAMPLES_PLAN ③ の目玉。 認証・決済は**実装せず、 静的モック**で「こういう機能が作れます」 を見せる。
+> 📐 **正典**: `sample-school-membership-spec.md`。 確定スタック = **Auth.js (NextAuth v5) + Vercel Postgres + Cloudflare Stream + Stripe(本番のみ)**。
+> サンプルは **薄い実認証つき**（`SCHOOL_DEMO_MODE=true`）= デモログインで gate を実演、 決済/Stream/R2 は回避。
+> 認可の machinery は本物（middleware + API で entitlement 確認）、 重い配信は本番フラグで分岐。
 
-### C-1. `/school/mypage`（保護者マイページ・モック）
+### C-0. 依存・基盤（spec Section 7 / 8）
 
-`src/app/school/mypage/page.tsx`:
-- 上部に **サンプル誘導バナー**（「📌 これは zuk-zuk AI STUDIO のサンプル（デモ画面）です」）
-- ヘッダー: 「こんにちは、 さくらママ 👋」 + ログアウト風ボタン（disabled）
-- カード群（design-brief Section 06 デモページ A 参照）:
-  - お子さま情報（ゆうとくん・Kinder・週1・通学 8 ヶ月目）
-  - 出席スタンプ（スタンプラリー風、 今月 3/4 回 🌟）
+```bash
+npm i next-auth@beta drizzle-orm @vercel/postgres
+npm i -D drizzle-kit
+```
+- `src/auth.ts`: Auth.js 設定。 **Credentials provider「デモログイン」**（seed 親に sign in）。 LINE/メール provider はコメントで用意（本番有効化）
+- `src/middleware.ts`: matcher = `/school/mypage/:path*`, `/school/lessons/:path*`。 未ログイン → `/school/login?callbackUrl=...`
+- `src/lib/db/schema.ts`: Drizzle で members/students/attendance/lesson_reports（+ Auth.js テーブル）
+- `src/lib/db/index.ts`: DB クライアント。 **`POSTGRES_URL` 未設定時はインメモリ fallback**（env なしでもサンプルが動く）
+- `src/lib/school-entitlement.ts`: `isMember(member)` = subscription_status ∈ {active, trialing}
+- `src/app/api/auth/[...nextauth]/route.ts`: Auth.js ハンドラ
+- `scripts/seed-school-demo.ts`: さくらママ(active) / ゆうと(kinder) / 出席3件 / レポート2件
+
+### C-1. `/school/login`（デモログイン）
+
+`src/app/school/login/page.tsx`:
+- **「デモアカウントでログイン」 ボタン**（1クリックで Credentials sign in）
+- 説明: 「サンプル体験用のデモアカウントです。 実装では LINE ログイン / メールで会員登録します」
+- 本番 provider（LINE / メール）ボタンは disabled プレビューで併記（見せる）
+
+### C-2. `/school/mypage`（保護者マイページ・要ログイン）
+
+`src/app/school/mypage/page.tsx`（Server Component、 `auth()` でセッション取得）:
+- middleware で gate 済（未ログインは login へ）。 ログアウトボタンは**実際に動く**（→ 再 gate を実演）
+- 上部に **サンプル誘導バナー**（「📌 zuk-zuk AI STUDIO サンプル / デモログイン中」）
+- カード群（design-brief Section 06 デモページ A / DB or fallback から取得）:
+  - お子さま情報（ゆうと・Kinder・週1・通学 8 ヶ月目）
+  - 出席スタンプ（今月 3/4 回 🌟）
   - 最新レッスンレポート（先生コメント + star）
-  - 進捗バー（フォニックス進捗・英検目標、 グリーン）
-  - 今月の月謝（「¥8,800（お支払い済み）」 + Stripe 風バッジ）
-- 戻る導線: 「← Hello Tree トップへ」（/school/）
+  - 進捗バー（フォニックス・英検、 グリーン）
+  - 今月の月謝（「¥8,800（お支払い済み）」 + Stripe 風バッジ。 デモは固定表示）
+- 戻る導線: 「← Hello Tree トップへ」
 
-### C-2. `/school/lessons`（会員限定コンテンツ・モック）
+### C-3. `/school/lessons`（会員限定コンテンツ）
 
 `src/app/school/lessons/page.tsx`:
 - 上部に同じ **サンプル誘導バナー**
-- 見出し「おうち学習コンテンツ」 + フィルタチップ（すべて/動画/歌/宿題PDF/塗り絵、 見た目のみ）
-- **コンテンツカードグリッド**（grid sm:grid-cols-2 lg:grid-cols-3）:
-  - 各カード: サムネ（content/thumb-*.jpg or プレースホルダ div）+ タイトル + タイプアイコン + 所要時間
-  - **一部カードに 🔒 ロックオーバーレイ**（「会員限定」）
-- 注記: 「※ 動画・PDF は代表 Emily 制作のサンプル。 実装ではミドルウェアで会員認証 + 限定公開します」
+- 見出し「おうち学習コンテンツ」 + フィルタチップ（すべて/動画/歌/宿題PDF/塗り絵）
+- **コンテンツカードグリッド**（Sanity `homeworkContent` or ハードコード fallback）:
+  - 各カード: サムネ（content/thumb-*.jpg or プレースホルダ）+ タイトル + 種別 + 所要時間
+  - `accessLevel: member` のカードは **未ログイン時 🔒 +「ログインして見る」**、 ログイン後 解錠
+- 配信 API:
+  - `src/app/api/school/content/[id]/play/route.ts`: 動画。 `auth()`+entitlement → 署名トークン（本番）/ デモ再生（`SCHOOL_DEMO_MODE`）
+  - `src/app/api/school/content/[id]/download/route.ts`: PDF。 同上 → presigned（本番）/ 公開ダミー（デモ）
+- 注記: 「※ 実装では Cloudflare Stream/R2 の署名URL で会員限定配信します」
 - 戻る導線: 「← Hello Tree トップへ」
 
-### C-3. 動作確認
+### C-4. 動作確認（gate が本当に効くこと）
 
-- http://localhost:3004/school/mypage 表示、 バナー目立つ、 全 disabled
-- http://localhost:3004/school/lessons 表示、 ロックアイコン表示、 画像なくても崩れない（プレースホルダ）
+- 未ログインで http://localhost:3004/school/mypage → `/school/login` に redirect される ✅
+- デモログイン → mypage が開く、 子供情報/出席/レポート表示 ✅
+- /school/lessons の member カードが、 未ログイン 🔒 → ログイン後 解錠 ✅
+- ログアウト → 再び mypage が弾かれる ✅
+- `POSTGRES_URL` 未設定でもインメモリ fallback で動く（サンプルの可搬性）✅
 
 ---
 
@@ -375,8 +409,8 @@ npm run build
 ## 9. 完成後の納品物
 
 1. ✅ `src/app/school/` 配下に動くサンプルサイト（12 セクション）
-2. ✅ 会員デモページ 2 枚（mypage / lessons）⭐
-3. ✅ Sanity スキーマ `schoolNews` + Studio で編集可能
+2. ✅ **薄い実認証**: Auth.js デモログイン + middleware gate + mypage / lessons（認可が実際に効く）⭐
+3. ✅ Sanity スキーマ `schoolNews` + `homeworkContent` + Studio で編集可能
 4. ✅ OG 画像（正方形セーフ）
 5. ✅ 法務 3 ページ（特商法にサブスク要点）
 6. ✅ サンプル誘導モード組み込み済み

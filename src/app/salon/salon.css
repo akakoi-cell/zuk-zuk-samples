@@ -153,7 +153,8 @@
 .salon-root .hdr--hero .brand { color: #fff; }
 .salon-root .hdr--hero .brand .amp { color: #fff; }
 
-.salon-root .nav { display: flex; align-items: center; gap: 34px; }
+/* globals.css の `.nav { position:fixed; top/left/right:0; height:112px }` 汚染を打ち消す */
+.salon-root .nav { position: static; top: auto; left: auto; right: auto; height: auto; z-index: auto; display: flex; align-items: center; gap: 34px; }
 .salon-root .nav a {
   font-family: var(--en);
   font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
