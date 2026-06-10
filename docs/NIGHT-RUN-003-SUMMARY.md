@@ -88,3 +88,66 @@ SalonFooter / SalonLegalLayout
 - [ ] (任意) CSS 方針を Tailwind 統一にするか判断
 - [ ] (任意) Google Map を実店舗 embed URL に差し替え
 - [ ] (任意) seed-sanity-salon.ts 作成 (Plan §7 で「任意」)
+
+---
+
+## 📊 アフター分析 (2026-06-10 朝の振り返り、 別セッションで追記)
+
+### 実測時間 (jsonl ログ解析)
+
+| フェーズ | 時刻 (JST) | 経過 |
+|---|---|---|
+| CLI セッション開始 | 01:53:17 | 0:00 |
+| 実装本体完了 (dev server 起動まで) | 01:55:45 | **+12 分** |
+| ⏸ 待機 (深夜〜朝) | — | (~5h) |
+| user が朝再開、 動作確認スタート | 07:12:35 | |
+| commit + push 完了 | 07:14:53 | +2 分 |
+| **CLI 実働 合計** | | **約 14 分** |
+| **セッション総時間** | 01:53〜07:18 | **25.5 分** (jsonl タイムスタンプ計測) |
+
+→ 試行 #2 (税理士、 推定 3-4h) 比で **約 1/15 の時間** で完成。 Claude Design カンプ + 設計書 + 整備済み Skill の 3 点セットが効いた。
+
+### user 許可ダイアログ 5 回の内訳 (朝)
+
+すべて朝の動作確認 / git 操作:
+1. `cd ... && sleep && curl http://localhost:* ...` (compound)
+2. `html=$(curl ...) && grep ...` (変数代入 + grep)
+3. `pkill -f "next dev"` (dev サーバー停止)
+4. `git add -A && git status && git commit -m ...` (multi-step git)
+5. `cd ~/.claude/.../memory && ls` (リポジトリ外 cd)
+
+### settings.json 強化 (試行 #4 以降の自走度向上)
+
+`.claude/settings.json` に compound パターン 47 件追加 (`63 → 110`、 zuk-zuk-samples + zuk-zuk-template 両方同期):
+- `Bash(cd ".../zuk-zuk-samples" && *)` 等の repo 内 cd compound
+- `Bash(html=$(curl *) && *)` 等の変数代入
+- `Bash(* | tail*)` `Bash(* 2>&1 | tail*)` 等の pipe / redirect
+- `Bash(pkill -f "next dev")` 等の固定 pkill
+- `Bash(git add -A && git *)` 等の multi-step git
+- `Bash(nohup *)` `Bash(env PORT=* npm *)` 等の background 起動
+
+→ 次回試行 #4 (③ オンラインスクール想定) では「最後の 5 回」 もほぼ自走化される想定。
+
+### 試行 #2 比較
+
+| 観点 | 試行 #2 税理士 | 試行 #3 美容室 |
+|---|---|---|
+| 実装時間 | ~3-4h | **~14 分** ✨ |
+| 設計入力 | 設計書 (Markdown のみ) | 設計書 + **Claude Design カンプ (HTML/CSS)** ⭐ |
+| 強調機能組み込み | 後付け (本番化最終確認で OG 修正等) | **最初から組み込み (LINE / Google Map)** |
+| サンプル誘導モード | 後付け | **最初から組み込み** |
+| OG 正方形セーフ | 後修正 | **最初から実装** |
+| セクション数 | 5 | **9 + LINE バナー + Header/Footer** |
+| 画像主体 | 文字主体 | **画像主体** (Hero に本物画像 + placeholder 連動) |
+| 許可ダイアログ | 多数 (compound + redirect 67%) | **5 回** (settings.json 整備の効果) |
+
+### 試行 #3 で確立した「夜間自走 必勝パターン」
+
+1. **設計書 + Claude Design カンプ + CLI Plan の 3 点セット**
+2. Claude Design 成果物を `.claude/plans/` 配下に保存 → CLI が参照可能
+3. 画像 placeholder 仕様 (setup-image-workflow Skill) で「画像なしでも動く」 設計
+4. サンプル誘導モード (setup-sample-demo-mode Skill) を最初から組み込み
+5. OG 正方形セーフ (setup-seo-ogp Skill) ルールも最初から
+6. settings.json の compound パターン整備で許可ダイアログ最小化
+
+→ 残り 4 サンプル (③ スクール / ④ EC / ⑤ 歯科 / ⑥ 飲食店) は試行 #3 のテンプレを流用予定。
