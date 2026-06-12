@@ -28,8 +28,11 @@
   --gut: clamp(20px, 5vw, 64px);
   --ease: cubic-bezier(.22,.61,.36,1);
 
-  --hand:  var(--font-yusei), "Yusei Magic", sans-serif;
-  --round: var(--font-zen-maru), "Zen Maru Gothic", sans-serif;
+  /* Adobe Fonts (kit gux5cqf, root layout で全体ロード) を最優先、未ロード時は Google へ */
+  --hand:  "sichandic", var(--font-yusei), "Yusei Magic", sans-serif;                /* SicHandic 手書き = 見出し/ナビ/Hero/pill */
+  --round: "ryo-gothic-plusn", var(--font-zen-maru), "Zen Maru Gothic", sans-serif;  /* Ryo Gothic PlusN M = 和文本文 */
+  --latin: "montserrat", var(--font-zen-maru), sans-serif;                           /* Montserrat = 欧文ラベル/数字 */
+  --hand-h: "sichandich", "sichandic", var(--font-yusei), "Yusei Magic", sans-serif; /* SicHandicH 太め手書き = 大見出し/コース名 */
 
   /* body 既定 (テンプレの letter-spacing/line-height/weight をスコープ内で上書き) */
   font-family: var(--hand);
@@ -54,12 +57,12 @@
 /* セクション見出し (教室の特徴 / 先生たちの紹介 / コース 共通) */
 .school-root .sec-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .school-root .sec-head h2 {
-  font-family: var(--hand); font-weight: 400; margin: 0;
+  font-family: var(--hand-h); font-weight: 400; margin: 0;
   font-size: clamp(26px, 3.2vw, 40px); letter-spacing: .08em; line-height: 1.4;
 }
 .school-root .sec-head .sub {
-  max-width: 760px; font-size: clamp(13.5px, 1.15vw, 16px);
-  line-height: 2; letter-spacing: .04em; color: inherit; opacity: .92;
+  max-width: 760px; font-family: var(--hand); font-size: clamp(13.5px, 1.15vw, 16px);
+  line-height: 2; letter-spacing: .06em; color: inherit; opacity: .92;
 }
 
 /* ============================================================
@@ -203,7 +206,7 @@
 .school-root .fcard:nth-child(1) .fcard__pin { background: var(--blue); }
 .school-root .fcard:nth-child(2) .fcard__pin { background: var(--coral); }
 .school-root .fcard:nth-child(3) .fcard__pin { background: var(--green); }
-.school-root .fcard__label { font-family: var(--round); font-size: 11px; letter-spacing: .24em; color: #b9c0b2; }
+.school-root .fcard__label { font-family: var(--latin); font-weight: 500; font-size: 12px; letter-spacing: .14em; color: #a4a4a4; text-transform: uppercase; }
 .school-root .fcard__title { font-family: var(--hand); font-size: clamp(18px, 1.5vw, 22px); letter-spacing: .04em; margin: 6px 0 16px; }
 .school-root .fcard:nth-child(1) .fcard__title { color: var(--green); }
 .school-root .fcard:nth-child(2) .fcard__title { color: var(--coral); }
@@ -211,7 +214,7 @@
 .school-root .fcard__photo { width: 100%; aspect-ratio: 296/182; border-radius: 12px; overflow: hidden; }
 .school-root .fcard__photo img { width: 100%; height: 100%; object-fit: cover; }
 .school-root .fcard__desc { margin-top: 16px; font-family: var(--round); font-size: 13.5px; line-height: 2; color: #5b6357; letter-spacing: .02em; }
-.school-root .fcard__no { position: absolute; right: 18px; bottom: 12px; font-family: var(--round); font-size: 12px; color: #c4cbbd; letter-spacing: .1em; }
+.school-root .fcard__no { position: absolute; right: 18px; bottom: 12px; font-family: var(--latin); font-weight: 500; font-size: 13px; color: #a4a4a4; letter-spacing: .12em; }
 
 /* ============================================================
    Teachers「先生たちの紹介」 (Figma node 9:782) — 青地・荷札カード3枚
@@ -253,7 +256,7 @@
 .school-root .tcard--green .tcard__tag { background: rgba(39,159,119,.13); color: var(--green); }
 .school-root .tcard__role { font-family: var(--round); font-size: 12.5px; color: #7c8478; }
 .school-root .tcard__desc { margin-top: 14px; font-family: var(--round); font-size: 13.5px; line-height: 2; color: #5b6357; letter-spacing: .02em; }
-.school-root .tcard__profile { position: absolute; top: 30px; right: 12px; writing-mode: vertical-rl; font-family: var(--round); font-size: 10px; letter-spacing: .28em; color: #c4cbbd; text-transform: uppercase; }
+.school-root .tcard__profile { position: absolute; top: 30px; right: 12px; writing-mode: vertical-rl; font-family: var(--latin); font-weight: 500; font-size: 10px; letter-spacing: .22em; color: #c4cbbd; text-transform: uppercase; }
 
 /* ============================================================
    Courses「成長に合わせた、4つのコース」 (Figma node 8:557)
@@ -272,8 +275,8 @@
 .school-root .ccard--yellow .ccard__head { background: #ecc94d; }
 .school-root .ccard--green  .ccard__head { background: var(--green-bt); }
 .school-root .ccard--blue   .ccard__head { background: var(--blue); }
-.school-root .ccard__class { font-family: var(--round); font-size: 11px; letter-spacing: .22em; opacity: .85; }
-.school-root .ccard__name { font-family: var(--hand); font-size: clamp(20px, 1.9vw, 26px); letter-spacing: .04em; margin-top: 4px; }
+.school-root .ccard__class { font-family: var(--latin); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; opacity: .55; }
+.school-root .ccard__name { font-family: var(--hand-h); font-size: clamp(20px, 1.9vw, 26px); letter-spacing: .06em; margin-top: 4px; }
 .school-root .ccard__age { flex: none; background: #fff; font-family: var(--hand); font-size: clamp(13px, 1.1vw, 16px); padding: 6px 14px; border-radius: 50px; letter-spacing: .04em; }
 .school-root .ccard--coral  .ccard__age { color: var(--coral); }
 .school-root .ccard--yellow .ccard__age { color: #c79a23; }
@@ -282,7 +285,7 @@
 .school-root .ccard__body { position: relative; padding: clamp(20px, 1.8vw, 28px); min-height: 180px; }
 .school-root .ccard__desc { font-family: var(--round); font-size: 13.5px; line-height: 2; color: #5b6357; max-width: 86%; letter-spacing: .02em; }
 .school-root .ccard__pills { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-.school-root .ccard__pill { font-family: var(--round); font-size: 12px; padding: 5px 13px; border-radius: 50px; }
+.school-root .ccard__pill { font-family: var(--hand); font-size: 13px; padding: 5px 14px; border-radius: 50px; letter-spacing: .04em; }
 .school-root .ccard--coral  .ccard__pill { background: rgba(230,110,97,.13); color: var(--coral); }
 .school-root .ccard--yellow .ccard__pill { background: rgba(236,201,77,.2); color: #c79a23; }
 .school-root .ccard--green  .ccard__pill { background: rgba(140,202,119,.22); color: var(--green-dk); }
@@ -305,8 +308,8 @@
 .school-root .plan--popular { border-color: var(--coral); }
 .school-root .plan__ribbon { position: absolute; top: -14px; right: 24px; background: var(--coral); color: #fff; font-family: var(--hand); font-size: 14px; padding: 5px 16px; border-radius: 50px; }
 .school-root .plan__name { font-family: var(--hand); font-size: clamp(18px, 1.6vw, 22px); color: var(--green); }
-.school-root .plan__price { font-family: var(--hand); font-size: clamp(32px, 3.6vw, 46px); color: var(--text); margin-top: 10px; }
-.school-root .plan__price .unit { font-size: 15px; color: #7c8478; margin-left: 6px; }
+.school-root .plan__price { font-family: var(--latin); font-weight: 500; font-size: clamp(32px, 3.6vw, 46px); color: var(--text); margin-top: 10px; }
+.school-root .plan__price .unit { font-family: var(--round); font-size: 15px; color: #7c8478; margin-left: 6px; }
 .school-root .plan__desc { font-family: var(--round); font-size: 13.5px; line-height: 1.9; color: #5b6357; margin-top: 12px; }
 .school-root .plan__features { list-style: none; padding: 0; margin: 20px 0 0; display: flex; flex-direction: column; gap: 11px; }
 .school-root .plan__features li { font-family: var(--round); font-size: 13.5px; color: var(--text); display: flex; align-items: center; gap: 10px; }
@@ -315,7 +318,7 @@
 .school-root .pricing__notes li { list-style: none; font-family: var(--round); font-size: 12.5px; color: var(--green-dk); letter-spacing: .02em; }
 .school-root .pricing__meta { display: flex; gap: clamp(16px, 3vw, 40px); justify-content: center; margin-top: clamp(24px, 3vw, 34px); flex-wrap: wrap; }
 .school-root .pricing__meta div { font-family: var(--round); font-size: 13px; color: var(--green-dk); }
-.school-root .pricing__meta b { font-family: var(--hand); font-weight: 400; color: var(--text); font-size: 17px; margin-left: 8px; }
+.school-root .pricing__meta b { font-family: var(--latin); font-weight: 500; color: var(--text); font-size: 17px; margin-left: 8px; }
 
 /* Trial (無料体験予約・disabled デモ) */
 .school-root .trial { position: relative; }
@@ -363,7 +366,7 @@
 .school-root .line-banner { background: #06C755; }
 .school-root .line-banner__grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: clamp(28px, 4vw, 56px); align-items: center; padding-block: clamp(40px, 5vw, 64px); }
 .school-root .line-banner__head { font-family: var(--hand); color: #fff; font-size: clamp(20px, 2.2vw, 28px); display: flex; align-items: center; gap: 14px; letter-spacing: .04em; }
-.school-root .line-banner__head .lico { width: 36px; height: 36px; border-radius: 9px; background: #fff; color: #06C755; display: inline-flex; align-items: center; justify-content: center; font-family: var(--round); font-weight: 700; font-size: 14px; flex: none; }
+.school-root .line-banner__head .lico { width: 36px; height: 36px; border-radius: 9px; background: #fff; color: #06C755; display: inline-flex; align-items: center; justify-content: center; font-family: var(--latin); font-weight: 700; font-size: 13px; letter-spacing: .02em; flex: none; }
 .school-root .line-banner__body { margin-top: 14px; color: rgba(255,255,255,.95); font-family: var(--round); font-size: 14px; line-height: 1.9; max-width: 42ch; }
 .school-root .line-banner__btn { margin-top: 22px; background: #fff; color: #06C755; font-family: var(--hand); font-size: 15px; padding: 13px 28px; border: none; border-radius: 50px; opacity: .8; cursor: not-allowed; letter-spacing: .04em; }
 .school-root .line-banner__note { margin-top: 10px; font-family: var(--round); font-size: 11px; color: rgba(255,255,255,.85); }
@@ -389,7 +392,7 @@
 .school-root .foot__brand img { height: 40px; width: auto; filter: brightness(0) invert(1); opacity: .95; }
 .school-root .foot__brand p { font-family: var(--round); font-size: 12.5px; margin-top: 14px; color: rgba(255,255,255,.6); line-height: 1.9; max-width: 30ch; }
 .school-root .foot__cols { display: flex; gap: clamp(36px, 5vw, 72px); flex-wrap: wrap; }
-.school-root .foot__col h4 { font-family: var(--round); font-size: 11px; letter-spacing: .18em; color: rgba(255,255,255,.45); margin: 0 0 14px; text-transform: uppercase; }
+.school-root .foot__col h4 { font-family: var(--latin); font-weight: 500; font-size: 11px; letter-spacing: .18em; color: rgba(255,255,255,.45); margin: 0 0 14px; text-transform: uppercase; }
 .school-root .foot__col a { display: block; font-family: var(--round); font-size: 13px; line-height: 2.1; color: rgba(255,255,255,.8); }
 .school-root .foot__col a:hover { color: #fff; }
 .school-root .foot__bottom { margin-top: clamp(40px, 5vw, 64px); padding-top: 24px; border-top: 1px solid rgba(255,255,255,.12); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; font-family: var(--round); font-size: 11px; letter-spacing: .1em; color: rgba(255,255,255,.45); }

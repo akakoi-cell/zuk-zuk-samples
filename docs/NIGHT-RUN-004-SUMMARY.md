@@ -55,8 +55,9 @@ Claude Design 直書きでは品質が出なかった同案件が、Figma を正
 - **`get_screenshot` + dev server スクショの並置比較**（Chrome headless）で、波/丘・カード回転・ピンの位置を詰められた。
 
 ### 完全一致しなかった点（=本テストの「差分」、下記 §3）
-- 手書きフォント **SicHandic（Figma）→ Yusei Magic（Google）** の代替。質感は近い（マーカー手書き）が、
-  SicHandic よりやや細い。和欧・かな漢字をカバーし、本文も line-height 2.7 で可読性は確保。
+- **【2026-06-12 更新】Adobe Fonts（Typekit kit `gux5cqf`）導入で Figma 実フォントに差し替え済み。**
+  当初は Yusei Magic（Google）で代替し「やや細い」課題があったが、現在は実フォントが適用され課題は解消。
+  Google フォントは Adobe 未ロード時の fallback として温存（多層 font-family）。
 - Hero 写真の楕円は Figma の alpha マスク画像 → CSS `border-radius:50%` で再現（視覚的に等価）。
 
 ---
@@ -65,7 +66,8 @@ Claude Design 直書きでは品質が出なかった同案件が、Figma を正
 
 | 区分 | Figma | 再現コード | 理由 / 影響 |
 |---|---|---|---|
-| フォント | SicHandic（手書き） | Yusei Magic（Google, next/font） | 無料の完全一致なし。近似マーカー手書き。やや細い |
+| フォント（当初） | SicHandic 他 | Yusei Magic / Zen Maru Gothic（Google） | 近似のみ。「やや細い」課題あり（解消済み、下行参照） |
+| フォント（現在） | SicHandic:Regular / SicHandicH / Ryo Gothic PlusN:M / Montserrat:Medium | **Adobe Fonts で実フォント一致**（kit `gux5cqf` 全体ロード）+ Google を fallback 温存 | `--hand`(sichandic) 見出し/Hero/pill、`--hand-h`(sichandich) 大見出し/コース名、`--round`(ryo-gothic-plusn) カード本文、`--latin`(montserrat) 欧文ラベル(FEATURE/CLASS)・番号・¥価格。年齢/期間 pill は Figma 実態どおり手書き(`--hand`)。実フォント一致で忠実度ほぼ完全 |
 | `@theme` 配置 | （プラン記載: school/styles.css） | `globals.css` の `@theme` に集約 | Tailwind v4 は `@import "tailwindcss"` を持つエントリでしか `@theme` を処理しない（税理士と同パターン）。視覚に影響なし。複雑な視覚は `school/styles.css` の `.school-root` スコープ |
 | Hero 写真マスク | alpha マスク画像（楕円） | CSS 楕円（border-radius 50%） | 視覚的に等価 |
 | 先生写真 | 3枚とも同一プレースホルダ（手を振る女性） | 同一画像を3名に複製 | Figma 仕様どおり。実案件では別途撮影 |
@@ -88,6 +90,9 @@ Claude Design 直書きでは品質が出なかった同案件が、Figma を正
 - **`get_design_context` はフルページだと 66k 超**で大きすぎる → 必ずセクション node 単位で呼ぶ（正典どおり）。
 - **スクショ検証の reveal アーティファクト**: スクロール出現（`.rv`）が headless 全ページ撮影だと下部を opacity:0 にする
   → `--force-prefers-reduced-motion=reduce` で reveal を no-op 化して撮影すると全要素が見える。実ブラウザでは正常。
+- **Adobe Fonts（kit `gux5cqf`）は root layout で全体ロード**。localhost でも実フォント適用を確認
+  （post-JS DOM の `<html>` に `wf-active` / `wf-sichandic-n4-active` / `wf-ryo-gothic-plusn-n4-active` / `wf-montserrat-n*-active`）。
+  kit を全体ロードにしたため tax / salon も wf-loading splash 経由になるが、**両ページとも表示・フォント正常（リグレッションなし）を確認済み**。
 
 ---
 
