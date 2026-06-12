@@ -564,6 +564,42 @@ h2 { letter-spacing: 0.1em; }
   --font-mono:   var(--font-jetbrains), "JetBrains Mono", monospace;
 }
 
+/* =========================================================
+   子供英会話教室サンプル #69「Hello Tree」 (Figma 忠実再現)
+   視覚の正典: Figma fileKey IZSnIpCsrV2cjYMIG0CanV / node 8-627
+   カラーは get_variable_defs で抽出した実値 (figma-repro.md 第2章)。
+   ※ Tailwind v4 の @theme は @import "tailwindcss" を持つこの globals.css
+     でのみ処理されるため、トークンはここに集約 (税理士サンプルと同パターン)。
+     複雑な視覚 (楕円マスク/手書き装飾/波エッジ) は school/styles.css の
+     .school-root スコープに置き、layout で import する。
+   ========================================================= */
+@theme {
+  --color-school-bg:       #f5f3ea; /* シロ  ベース背景 (生成り) */
+  --color-school-green:    #279f77; /* ミドリ_N  メイン緑 */
+  --color-school-green-dk: #1a7859; /* ミドリ_Dk 濃緑 */
+  --color-school-green-bt: #8cca77; /* ミドリ_Bt 明緑 */
+  --color-school-green-lt: #cddebd; /* ミドリ_Lt 淡緑 */
+  --color-school-green-pl: #e8ede3; /* ミドリ_Pl ごく淡い緑 (セクション地) */
+  --color-school-yellow:   #f3d55e; /* キイロ_N */
+  --color-school-yellow-dk:#e6ca52; /* オレンジ_N 黄(濃) */
+  --color-school-brown:    #966d4c; /* オレンジ_Dk 茶 */
+  --color-school-coral:    #e66e61; /* アカ_N コーラル */
+  --color-school-blue:     #329ac4; /* アオ_N 青 */
+  --color-school-blue-dk:  #2c6890; /* アオ_Dk 濃青 */
+  --color-school-blue-dp:  #083136; /* アオ_Dp 深青 (ほぼ黒緑・テキスト) */
+  --color-school-text:     #2d2c28; /* クロ テキスト */
+
+  --radius-school:      1.5rem; /* 24px カード */
+  --radius-school-lg:   2rem;   /* 32px 大ブロック */
+}
+
+/* next/font 橋渡し: 手書き(Yusei Magic)=見出し/ナビ/Hero、
+   丸ゴ(Zen Maru Gothic)=本文。SicHandic の代替に Yusei Magic を採用。 */
+@theme inline {
+  --font-hand:  var(--font-yusei), "Yusei Magic", sans-serif;
+  --font-round: var(--font-zen-maru), "Zen Maru Gothic", var(--font-zenkaku), sans-serif;
+}
+
 /* ---- 税理士サイトのルートスコープ ----
    テンプレ本文の letter-spacing/line-height/font-weight をリセットし、
    Claude Design の body 既定値に揃える。 */

@@ -1,0 +1,438 @@
+/* ============================================================
+   Hello Tree — こども英会話教室 (サンプル #69)
+   Figma 手起こしデザインを「正典」として design-to-code 再現。
+   fileKey IZSnIpCsrV2cjYMIG0CanV / node 8-627 (Desktop 1512px)
+   カラートークンは globals.css の @theme (--color-school-*) に定義済。
+   ここでは .school-root スコープで、Figma 特有の視覚 (手書きステッカー /
+   楕円マスク写真 / 透かし見出し / 波・丘 / カード装飾) を実装する。
+   ============================================================ */
+
+.school-root {
+  /* Figma get_variable_defs 実値 (custom CSS から参照しやすいよう再掲) */
+  --bg:        #f5f3ea;
+  --green:     #279f77;
+  --green-dk:  #1a7859;
+  --green-bt:  #8cca77;
+  --green-lt:  #cddebd;
+  --green-pl:  #e8ede3;
+  --yellow:    #f3d55e;
+  --yellow-dk: #e6ca52;
+  --brown:     #966d4c;
+  --coral:     #e66e61;
+  --blue:      #329ac4;
+  --blue-dk:   #2c6890;
+  --blue-dp:   #083136;
+  --text:      #2d2c28;
+
+  --maxw: 1320px;
+  --gut: clamp(20px, 5vw, 64px);
+  --ease: cubic-bezier(.22,.61,.36,1);
+
+  --hand:  var(--font-yusei), "Yusei Magic", sans-serif;
+  --round: var(--font-zen-maru), "Zen Maru Gothic", sans-serif;
+
+  /* body 既定 (テンプレの letter-spacing/line-height/weight をスコープ内で上書き) */
+  font-family: var(--hand);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.9;
+  font-weight: 400;
+  letter-spacing: .03em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.school-root img { display: block; max-width: 100%; }
+.school-root a { color: inherit; text-decoration: none; }
+.school-root button { font-family: inherit; cursor: pointer; }
+
+/* ---------- layout helpers ---------- */
+.school-root .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
+.school-root .sec { position: relative; padding-block: clamp(64px, 8vw, 110px); }
+
+/* セクション見出し (教室の特徴 / 先生たちの紹介 / コース 共通) */
+.school-root .sec-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.school-root .sec-head h2 {
+  font-family: var(--hand); font-weight: 400; margin: 0;
+  font-size: clamp(26px, 3.2vw, 40px); letter-spacing: .08em; line-height: 1.4;
+}
+.school-root .sec-head .sub {
+  max-width: 760px; font-size: clamp(13.5px, 1.15vw, 16px);
+  line-height: 2; letter-spacing: .04em; color: inherit; opacity: .92;
+}
+
+/* ============================================================
+   Header  (Figma node 2:12)
+   ============================================================ */
+.school-root .hdr {
+  position: fixed; inset: 0 0 auto 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+  padding: 18px var(--gut);
+  background: rgba(232,237,227,.92);
+  backdrop-filter: blur(10px);
+  transition: box-shadow .4s var(--ease), padding .4s var(--ease);
+}
+.school-root .hdr--solid { box-shadow: 0 2px 18px rgba(8,49,54,.07); padding-block: 12px; }
+.school-root .hdr__logo { height: clamp(34px, 3vw, 44px); width: auto; flex: none; }
+/* globals.css の `.nav { position:fixed; top/left/right:0; height:112px }` 汚染を打ち消す */
+.school-root .nav {
+  position: static; top: auto; left: auto; right: auto; height: auto; z-index: auto;
+  display: flex; align-items: center; gap: clamp(16px, 2.2vw, 40px);
+  font-family: var(--hand); font-size: clamp(14px, 1.15vw, 18px);
+  color: var(--blue-dp); letter-spacing: .09em;
+}
+.school-root .nav a { transition: color .25s; white-space: nowrap; }
+.school-root .nav a:hover { color: var(--green); }
+.school-root .nav-cta {
+  flex: none;
+  background: var(--coral); color: var(--bg);
+  font-family: var(--hand); font-size: clamp(14px, 1.1vw, 20px); letter-spacing: .1em;
+  padding: 13px clamp(18px, 1.8vw, 28px); border: none; border-radius: 50px;
+  white-space: nowrap;
+  transition: background .3s var(--ease), transform .3s var(--ease), opacity .3s;
+}
+.school-root .nav-cta:not(:disabled):hover { background: #d85b4e; transform: translateY(-1px); }
+.school-root .nav-cta:disabled { cursor: not-allowed; }
+.school-root .burger { display: none; flex-direction: column; gap: 5px; width: 30px; background: none; border: none; padding: 6px 0; flex: none; }
+.school-root .burger span { height: 2.4px; width: 100%; background: var(--blue-dp); border-radius: 2px; transition: .3s var(--ease); }
+
+/* mobile menu sheet */
+.school-root .msheet {
+  position: fixed; inset: 0; z-index: 49; background: var(--green-pl);
+  display: flex; flex-direction: column; justify-content: center; gap: 6px;
+  padding: 0 var(--gut);
+  transform: translateY(-100%); opacity: 0; pointer-events: none;
+  transition: transform .5s var(--ease), opacity .35s;
+}
+.school-root .msheet.open { transform: none; opacity: 1; pointer-events: auto; }
+.school-root .msheet a { font-family: var(--hand); font-size: 26px; color: var(--blue-dp); padding: 14px 0; border-bottom: 1px solid rgba(8,49,54,.1); letter-spacing: .08em; }
+
+/* ============================================================
+   Hero  (Figma node 4:194) — 楕円マスク写真 + 手書きステッカー
+   ============================================================ */
+.school-root .hero {
+  position: relative; background: var(--green-pl); overflow: hidden;
+  padding-top: clamp(76px, 8vw, 96px);
+}
+.school-root .hero__inner {
+  position: relative; max-width: 1512px; margin-inline: auto;
+  height: clamp(440px, 52vw, 740px);
+}
+/* 楕円マスク写真 (右に寄せて全体をほぼ覆う、 端は背景にブリード) */
+.school-root .hero__photo {
+  position: absolute; top: 50%; right: -3%; transform: translateY(-50%);
+  width: 92%; height: 112%;
+  border-radius: 50%; overflow: hidden;
+  box-shadow: 0 18px 50px rgba(8,49,54,.10);
+}
+.school-root .hero__photo img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 32%; }
+/* 手書きステッカー (白ボックスを少し回転して積む) */
+.school-root .hero__stickers {
+  position: absolute; z-index: 2;
+  left: clamp(16px, 3.4vw, 56px); top: clamp(40px, 7vw, 88px);
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: clamp(8px, 1.1vw, 14px);
+}
+.school-root .hero__sticker {
+  background: #fff; box-shadow: 0 8px 26px rgba(8,49,54,.10);
+  display: inline-flex; align-items: baseline; white-space: nowrap;
+  font-family: var(--hand); line-height: 1;
+}
+.school-root .hero__sticker--1 { transform: rotate(-2.4deg); padding: 6px 16px 12px; gap: .12em; }
+.school-root .hero__sticker--2 { transform: rotate(-1.96deg); padding: 6px 14px 10px; gap: .1em; }
+.school-root .hero__sticker--3 { transform: rotate(-1.96deg); padding: 6px 12px; }
+.school-root .h-nice  { color: var(--yellow); font-size: clamp(46px, 8vw, 116px); text-shadow: 0 2px 0 rgba(150,109,76,.18); letter-spacing: -.02em; }
+.school-root .h-ga    { color: var(--green); font-size: clamp(26px, 4.2vw, 61px); }
+.school-root .h-watashi { color: var(--green); font-size: clamp(30px, 4.6vw, 68px); }
+.school-root .h-aikoto  { color: var(--coral); font-size: clamp(36px, 5.8vw, 86px); letter-spacing: -.04em; }
+.school-root .h-sub   { color: var(--blue); font-size: clamp(13px, 1.6vw, 24px); letter-spacing: .12em; line-height: 1; }
+/* 下部の緑の丘 + 木のドゥードル (hero → about へのつなぎ) */
+.school-root .hero__hill {
+  position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: auto;
+  display: block; pointer-events: none; z-index: 1;
+}
+
+/* ============================================================
+   About「この教室のこと」 (Figma node 5:60) — ベタ緑地・白文字
+   ============================================================ */
+.school-root .about { position: relative; background: var(--green); color: var(--green-pl); overflow: hidden; }
+.school-root .about__inner { position: relative; z-index: 2; max-width: 1060px; margin-inline: auto; padding: clamp(48px, 6vw, 86px) var(--gut) 0; }
+.school-root .about__watermark {
+  font-family: var(--hand); font-weight: 400; text-transform: uppercase;
+  font-size: clamp(58px, 11vw, 132px); line-height: .82; letter-spacing: .04em;
+  color: var(--green-lt); opacity: .16; margin: 0 0 -.18em -.02em;
+}
+.school-root .about__heading { font-family: var(--hand); font-weight: 400; margin: 0; font-size: clamp(24px, 3.4vw, 36px); letter-spacing: .09em; }
+.school-root .about__body { margin-top: clamp(22px, 3vw, 40px); font-size: clamp(14px, 1.25vw, 18px); line-height: 2.7; letter-spacing: .05em; }
+.school-root .about__body p { margin: 0; }
+/* お家のシーン (右下) + 鳥 + 手書きバッジ + 下部の淡い丘 */
+.school-root .about__scene { position: relative; z-index: 2; height: clamp(150px, 20vw, 270px); margin-top: clamp(8px, 1.5vw, 20px); }
+.school-root .about__house { position: absolute; right: clamp(16px, 6vw, 96px); bottom: 0; width: clamp(200px, 24vw, 353px); height: auto; filter: drop-shadow(0 8px 18px rgba(8,49,54,.12)); }
+.school-root .about__bird { position: absolute; right: clamp(170px, 24vw, 360px); bottom: clamp(150px, 19vw, 270px); width: clamp(34px, 4vw, 56px); height: auto; }
+.school-root .about__badge {
+  position: absolute; right: clamp(150px, 21vw, 340px); bottom: clamp(110px, 14vw, 210px);
+  font-family: var(--hand); color: #fff; font-size: clamp(18px, 2vw, 30px); letter-spacing: .06em;
+  display: inline-flex; align-items: center; gap: .3em; transform: rotate(-3deg); white-space: nowrap;
+}
+.school-root .about__badge .slash { color: var(--green-lt); font-size: 1.3em; }
+/* 緑セクション下部の淡い丘 (features へのつなぎ) */
+.school-root .about__hill { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: auto; display: block; z-index: 1; }
+
+/* ============================================================
+   Features「教室の特徴」 (Figma node 7:413) — 淡緑地・白カード3枚
+   ============================================================ */
+.school-root .features { background: var(--green-pl); }
+.school-root .features .sec-head h2 { color: var(--green); }
+.school-root .features .sec-head .sub { color: var(--green-dk); }
+.school-root .fcards {
+  margin-top: clamp(40px, 5vw, 70px);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 2.4vw, 40px);
+  max-width: 1200px; margin-inline: auto;
+}
+.school-root .fcard {
+  position: relative; background: #fff; border-radius: 22px;
+  padding: clamp(22px, 2vw, 32px) clamp(20px, 1.8vw, 28px) clamp(26px, 2.2vw, 36px);
+  box-shadow: 0 14px 34px rgba(8,49,54,.08);
+}
+.school-root .fcards .fcard:nth-child(1) { transform: rotate(-2deg); }
+.school-root .fcards .fcard:nth-child(2) { transform: rotate(.6deg); }
+.school-root .fcards .fcard:nth-child(3) { transform: rotate(2deg); }
+.school-root .fcard__pin { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 3px 6px rgba(8,49,54,.2); }
+.school-root .fcard:nth-child(1) .fcard__pin { background: var(--blue); }
+.school-root .fcard:nth-child(2) .fcard__pin { background: var(--coral); }
+.school-root .fcard:nth-child(3) .fcard__pin { background: var(--green); }
+.school-root .fcard__label { font-family: var(--round); font-size: 11px; letter-spacing: .24em; color: #b9c0b2; }
+.school-root .fcard__title { font-family: var(--hand); font-size: clamp(18px, 1.5vw, 22px); letter-spacing: .04em; margin: 6px 0 16px; }
+.school-root .fcard:nth-child(1) .fcard__title { color: var(--green); }
+.school-root .fcard:nth-child(2) .fcard__title { color: var(--coral); }
+.school-root .fcard:nth-child(3) .fcard__title { color: var(--green); }
+.school-root .fcard__photo { width: 100%; aspect-ratio: 296/182; border-radius: 12px; overflow: hidden; }
+.school-root .fcard__photo img { width: 100%; height: 100%; object-fit: cover; }
+.school-root .fcard__desc { margin-top: 16px; font-family: var(--round); font-size: 13.5px; line-height: 2; color: #5b6357; letter-spacing: .02em; }
+.school-root .fcard__no { position: absolute; right: 18px; bottom: 12px; font-family: var(--round); font-size: 12px; color: #c4cbbd; letter-spacing: .1em; }
+
+/* ============================================================
+   Teachers「先生たちの紹介」 (Figma node 9:782) — 青地・荷札カード3枚
+   ============================================================ */
+.school-root .teachers { position: relative; background: var(--blue); color: #fff; overflow: hidden; }
+.school-root .teachers .sec-head h2 { color: #fff; }
+.school-root .teachers .sec-head .sub { color: rgba(255,255,255,.9); }
+.school-root .tcards {
+  margin-top: clamp(48px, 6vw, 80px);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(22px, 2.6vw, 44px);
+  max-width: 1200px; margin-inline: auto;
+}
+.school-root .tcard {
+  position: relative; background: #fff; border-radius: 18px; color: var(--text);
+  padding: clamp(30px, 2.6vw, 40px) clamp(22px, 1.8vw, 28px) clamp(24px, 2vw, 32px);
+  box-shadow: 0 16px 38px rgba(8,49,54,.16);
+}
+.school-root .tcards .tcard:nth-child(1) { transform: rotate(-1.6deg); }
+.school-root .tcards .tcard:nth-child(2) { transform: rotate(.8deg); }
+.school-root .tcards .tcard:nth-child(3) { transform: rotate(2deg); }
+/* 荷札の穴 + 色クリップ */
+.school-root .tcard__hole { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 16px; height: 16px; border-radius: 50%; background: var(--green-pl); box-shadow: inset 0 1px 3px rgba(8,49,54,.3); }
+.school-root .tcard__clip { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 30px; height: 22px; border-radius: 6px; }
+.school-root .tcard--coral .tcard__clip { background: var(--coral); }
+.school-root .tcard--yellow .tcard__clip { background: var(--yellow); }
+.school-root .tcard--green .tcard__clip { background: var(--green-bt); }
+.school-root .tcard__name { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; }
+.school-root .tcard__en { font-family: var(--hand); font-size: clamp(24px, 2.2vw, 32px); }
+.school-root .tcard--coral .tcard__en { color: var(--coral); }
+.school-root .tcard--yellow .tcard__en { color: var(--yellow-dk); }
+.school-root .tcard--green .tcard__en { color: var(--green); }
+.school-root .tcard__ja { font-family: var(--round); font-size: 14px; color: #7c8478; }
+.school-root .tcard__photo { width: 100%; aspect-ratio: 1/1; border-radius: 14px; overflow: hidden; margin-top: 14px; }
+.school-root .tcard__photo img { width: 100%; height: 100%; object-fit: cover; }
+.school-root .tcard__meta { display: flex; align-items: center; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.school-root .tcard__tag { font-family: var(--round); font-size: 12px; padding: 4px 12px; border-radius: 50px; }
+.school-root .tcard--coral .tcard__tag { background: rgba(230,110,97,.14); color: var(--coral); }
+.school-root .tcard--yellow .tcard__tag { background: rgba(230,202,82,.2); color: var(--yellow-dk); }
+.school-root .tcard--green .tcard__tag { background: rgba(39,159,119,.13); color: var(--green); }
+.school-root .tcard__role { font-family: var(--round); font-size: 12.5px; color: #7c8478; }
+.school-root .tcard__desc { margin-top: 14px; font-family: var(--round); font-size: 13.5px; line-height: 2; color: #5b6357; letter-spacing: .02em; }
+.school-root .tcard__profile { position: absolute; top: 30px; right: 12px; writing-mode: vertical-rl; font-family: var(--round); font-size: 10px; letter-spacing: .28em; color: #c4cbbd; text-transform: uppercase; }
+
+/* ============================================================
+   Courses「成長に合わせた、4つのコース」 (Figma node 8:557)
+   ============================================================ */
+.school-root .courses { background: var(--green-pl); }
+.school-root .courses .sec-head h2 { color: var(--blue-dk); }
+.school-root .courses .sec-head .sub { color: var(--green-dk); }
+.school-root .ccards {
+  margin-top: clamp(44px, 5vw, 72px);
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(20px, 2.2vw, 36px);
+  max-width: 1200px; margin-inline: auto;
+}
+.school-root .ccard { border-radius: 18px; overflow: hidden; box-shadow: 0 12px 30px rgba(8,49,54,.08); background: #faf7ef; }
+.school-root .ccard__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: clamp(20px, 1.8vw, 28px); color: #fff; }
+.school-root .ccard--coral  .ccard__head { background: var(--coral); }
+.school-root .ccard--yellow .ccard__head { background: #ecc94d; }
+.school-root .ccard--green  .ccard__head { background: var(--green-bt); }
+.school-root .ccard--blue   .ccard__head { background: var(--blue); }
+.school-root .ccard__class { font-family: var(--round); font-size: 11px; letter-spacing: .22em; opacity: .85; }
+.school-root .ccard__name { font-family: var(--hand); font-size: clamp(20px, 1.9vw, 26px); letter-spacing: .04em; margin-top: 4px; }
+.school-root .ccard__age { flex: none; background: #fff; font-family: var(--hand); font-size: clamp(13px, 1.1vw, 16px); padding: 6px 14px; border-radius: 50px; letter-spacing: .04em; }
+.school-root .ccard--coral  .ccard__age { color: var(--coral); }
+.school-root .ccard--yellow .ccard__age { color: #c79a23; }
+.school-root .ccard--green  .ccard__age { color: var(--green-dk); }
+.school-root .ccard--blue   .ccard__age { color: var(--blue-dk); }
+.school-root .ccard__body { position: relative; padding: clamp(20px, 1.8vw, 28px); min-height: 180px; }
+.school-root .ccard__desc { font-family: var(--round); font-size: 13.5px; line-height: 2; color: #5b6357; max-width: 86%; letter-spacing: .02em; }
+.school-root .ccard__pills { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.school-root .ccard__pill { font-family: var(--round); font-size: 12px; padding: 5px 13px; border-radius: 50px; }
+.school-root .ccard--coral  .ccard__pill { background: rgba(230,110,97,.13); color: var(--coral); }
+.school-root .ccard--yellow .ccard__pill { background: rgba(236,201,77,.2); color: #c79a23; }
+.school-root .ccard--green  .ccard__pill { background: rgba(140,202,119,.22); color: var(--green-dk); }
+.school-root .ccard--blue   .ccard__pill { background: rgba(50,154,196,.13); color: var(--blue-dk); }
+.school-root .ccard__child { position: absolute; right: clamp(16px, 1.6vw, 28px); bottom: clamp(14px, 1.4vw, 22px); width: clamp(96px, 11vw, 126px); height: auto; }
+
+/* ============================================================
+   下部セクション (Figma に図面なし → コード設計 / on-brand)
+   Pricing / Trial / Access / FAQ / LINE / Contact / Footer
+   ============================================================ */
+/* 共通: 淡いセクション帯 */
+.school-root .sec--cream { background: var(--bg); }
+.school-root .sec--green-pl { background: var(--green-pl); }
+
+/* Pricing */
+.school-root .pricing .sec-head h2 { color: var(--green); }
+.school-root .pricing .sec-head .sub { color: var(--green-dk); }
+.school-root .plans { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(20px, 2.4vw, 36px); max-width: 880px; margin-inline: auto; }
+.school-root .plan { position: relative; background: #fff; border-radius: 22px; padding: clamp(28px, 3vw, 40px); box-shadow: 0 12px 30px rgba(8,49,54,.07); border: 2px solid transparent; }
+.school-root .plan--popular { border-color: var(--coral); }
+.school-root .plan__ribbon { position: absolute; top: -14px; right: 24px; background: var(--coral); color: #fff; font-family: var(--hand); font-size: 14px; padding: 5px 16px; border-radius: 50px; }
+.school-root .plan__name { font-family: var(--hand); font-size: clamp(18px, 1.6vw, 22px); color: var(--green); }
+.school-root .plan__price { font-family: var(--hand); font-size: clamp(32px, 3.6vw, 46px); color: var(--text); margin-top: 10px; }
+.school-root .plan__price .unit { font-size: 15px; color: #7c8478; margin-left: 6px; }
+.school-root .plan__desc { font-family: var(--round); font-size: 13.5px; line-height: 1.9; color: #5b6357; margin-top: 12px; }
+.school-root .plan__features { list-style: none; padding: 0; margin: 20px 0 0; display: flex; flex-direction: column; gap: 11px; }
+.school-root .plan__features li { font-family: var(--round); font-size: 13.5px; color: var(--text); display: flex; align-items: center; gap: 10px; }
+.school-root .plan__features li::before { content: "🌱"; font-size: 14px; }
+.school-root .pricing__notes { max-width: 880px; margin: clamp(28px, 3vw, 40px) auto 0; display: flex; flex-direction: column; gap: 8px; }
+.school-root .pricing__notes li { list-style: none; font-family: var(--round); font-size: 12.5px; color: var(--green-dk); letter-spacing: .02em; }
+.school-root .pricing__meta { display: flex; gap: clamp(16px, 3vw, 40px); justify-content: center; margin-top: clamp(24px, 3vw, 34px); flex-wrap: wrap; }
+.school-root .pricing__meta div { font-family: var(--round); font-size: 13px; color: var(--green-dk); }
+.school-root .pricing__meta b { font-family: var(--hand); font-weight: 400; color: var(--text); font-size: 17px; margin-left: 8px; }
+
+/* Trial (無料体験予約・disabled デモ) */
+.school-root .trial { position: relative; }
+.school-root .trial .sec-head h2 { color: #fff; }
+.school-root .trial .sec-head .sub { color: rgba(255,255,255,.92); }
+.school-root .trial { background: var(--green); color: #fff; }
+.school-root .trial__box { max-width: 720px; margin: clamp(36px, 4vw, 56px) auto 0; background: #fff; border-radius: 22px; padding: clamp(28px, 3vw, 44px); color: var(--text); box-shadow: 0 18px 44px rgba(8,49,54,.18); }
+.school-root .trial__row { margin-bottom: 22px; }
+.school-root .trial__row label { display: block; font-family: var(--round); font-size: 12.5px; color: var(--green-dk); margin-bottom: 9px; letter-spacing: .04em; }
+.school-root .trial select, .school-root .trial input { width: 100%; font-family: var(--round); font-size: 14.5px; padding: 12px 14px; border: 1.5px solid var(--green-lt); border-radius: 12px; background: var(--bg); color: var(--text); }
+.school-root .trial select:disabled, .school-root .trial input:disabled { opacity: .6; cursor: not-allowed; }
+.school-root .trial__dates { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.school-root .trial__date { aspect-ratio: 1/1; border: 1.5px solid var(--green-lt); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--round); font-size: 12px; color: var(--text); background: var(--bg); cursor: not-allowed; gap: 2px; }
+.school-root .trial__date .mk { color: var(--green); font-size: 13px; }
+.school-root .trial__date .mk--x { color: #cbb9b9; }
+.school-root .trial__slots { display: flex; gap: 10px; flex-wrap: wrap; }
+.school-root .trial__slot { font-family: var(--round); font-size: 13px; padding: 8px 16px; border-radius: 50px; border: 1.5px solid var(--green-lt); color: var(--green-dk); background: var(--bg); cursor: not-allowed; }
+.school-root .trial__submit { width: 100%; margin-top: 8px; background: var(--green-lt); color: var(--green-dk); font-family: var(--hand); font-size: 16px; padding: 16px; border: none; border-radius: 50px; opacity: .8; cursor: not-allowed; letter-spacing: .06em; }
+.school-root .trial__cta { display: inline-flex; align-items: center; gap: 10px; margin-top: clamp(28px, 3vw, 40px); background: #fff; color: var(--green); font-family: var(--hand); font-size: clamp(14px, 1.2vw, 17px); padding: 14px 28px; border-radius: 50px; letter-spacing: .04em; transition: transform .3s var(--ease); }
+.school-root .trial__cta:hover { transform: translateX(4px); }
+.school-root .trial__wrap { text-align: center; }
+
+/* Access */
+.school-root .access .sec-head h2 { color: var(--green); }
+.school-root .access__grid { margin-top: clamp(36px, 4vw, 56px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 56px); align-items: stretch; max-width: 1100px; margin-inline: auto; }
+.school-root .access dl { display: grid; grid-template-columns: auto 1fr; gap: 0; }
+.school-root .access dt { font-family: var(--round); font-size: 12px; color: var(--green); padding: 16px 0; border-top: 1px solid var(--green-lt); width: 92px; letter-spacing: .08em; }
+.school-root .access dd { font-family: var(--round); font-size: 14px; line-height: 1.8; padding: 16px 0; border-top: 1px solid var(--green-lt); margin: 0; color: var(--text); }
+.school-root .access__map { border-radius: 18px; overflow: hidden; border: 1px solid var(--green-lt); background: #fff; }
+.school-root .access__map .frame { position: relative; width: 100%; height: 100%; min-height: 320px; }
+.school-root .access__map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* FAQ */
+.school-root .faq .sec-head h2 { color: var(--green); }
+.school-root .faq__list { max-width: 820px; margin: clamp(36px, 4vw, 56px) auto 0; }
+.school-root .faq details { background: #fff; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 8px 22px rgba(8,49,54,.05); overflow: hidden; }
+.school-root .faq summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 16px; padding: 20px 24px; font-family: var(--hand); font-size: clamp(14px, 1.2vw, 17px); letter-spacing: .03em; color: var(--text); }
+.school-root .faq summary::-webkit-details-marker { display: none; }
+.school-root .faq summary .q { font-family: var(--hand); color: var(--green); flex: none; }
+.school-root .faq summary .sign { margin-left: auto; flex: none; color: var(--green); font-size: 20px; transition: transform .3s; }
+.school-root .faq details[open] summary .sign { transform: rotate(45deg); }
+.school-root .faq .a { padding: 0 24px 22px 56px; font-family: var(--round); font-size: 13.5px; line-height: 2; color: #5b6357; }
+
+/* LINE banner */
+.school-root .line-banner { background: #06C755; }
+.school-root .line-banner__grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: clamp(28px, 4vw, 56px); align-items: center; padding-block: clamp(40px, 5vw, 64px); }
+.school-root .line-banner__head { font-family: var(--hand); color: #fff; font-size: clamp(20px, 2.2vw, 28px); display: flex; align-items: center; gap: 14px; letter-spacing: .04em; }
+.school-root .line-banner__head .lico { width: 36px; height: 36px; border-radius: 9px; background: #fff; color: #06C755; display: inline-flex; align-items: center; justify-content: center; font-family: var(--round); font-weight: 700; font-size: 14px; flex: none; }
+.school-root .line-banner__body { margin-top: 14px; color: rgba(255,255,255,.95); font-family: var(--round); font-size: 14px; line-height: 1.9; max-width: 42ch; }
+.school-root .line-banner__btn { margin-top: 22px; background: #fff; color: #06C755; font-family: var(--hand); font-size: 15px; padding: 13px 28px; border: none; border-radius: 50px; opacity: .8; cursor: not-allowed; letter-spacing: .04em; }
+.school-root .line-banner__note { margin-top: 10px; font-family: var(--round); font-size: 11px; color: rgba(255,255,255,.85); }
+.school-root .line-banner__qr { justify-self: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.school-root .line-banner__qrbox { width: 150px; height: 150px; background: rgba(255,255,255,.14); border: 2px dashed rgba(255,255,255,.5); border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; color: rgba(255,255,255,.85); font-family: var(--round); font-size: 11px; line-height: 1.7; }
+.school-root .line-banner__qrlabel { font-family: var(--round); font-size: 11px; color: rgba(255,255,255,.85); letter-spacing: .1em; }
+
+/* Contact (サンプル誘導) */
+.school-root .contact .sec-head h2 { color: var(--green); }
+.school-root .sample-note { max-width: 820px; margin: clamp(28px, 3vw, 40px) auto 0; background: #fff; border: 2px dashed var(--coral); border-radius: 18px; padding: 22px 26px; }
+.school-root .sample-note__t { font-family: var(--hand); font-size: 16px; color: var(--coral); display: flex; align-items: center; gap: 8px; }
+.school-root .sample-note__b { margin-top: 8px; font-family: var(--round); font-size: 13px; line-height: 1.9; color: #5b6357; }
+.school-root .sample-note a { color: var(--coral); text-decoration: underline; text-underline-offset: 2px; }
+.school-root .contact__cta { max-width: 820px; margin: 22px auto 0; background: var(--green); color: #fff; border-radius: 20px; padding: clamp(28px, 3vw, 40px); text-align: center; }
+.school-root .contact__cta h3 { font-family: var(--hand); font-size: clamp(18px, 1.8vw, 24px); margin: 0; letter-spacing: .04em; }
+.school-root .contact__cta p { font-family: var(--round); font-size: 13.5px; line-height: 1.9; margin: 14px 0 0; color: rgba(255,255,255,.9); }
+.school-root .contact__cta a { display: inline-flex; align-items: center; gap: 10px; margin-top: 22px; background: #fff; color: var(--green); font-family: var(--hand); font-size: 15px; padding: 13px 28px; border-radius: 50px; transition: transform .3s var(--ease); }
+.school-root .contact__cta a:hover { transform: translateX(4px); }
+
+/* Footer */
+.school-root .foot { background: var(--blue-dp); color: rgba(255,255,255,.7); padding: clamp(48px, 6vw, 80px) 0 32px; }
+.school-root .foot__top { display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+.school-root .foot__brand img { height: 40px; width: auto; filter: brightness(0) invert(1); opacity: .95; }
+.school-root .foot__brand p { font-family: var(--round); font-size: 12.5px; margin-top: 14px; color: rgba(255,255,255,.6); line-height: 1.9; max-width: 30ch; }
+.school-root .foot__cols { display: flex; gap: clamp(36px, 5vw, 72px); flex-wrap: wrap; }
+.school-root .foot__col h4 { font-family: var(--round); font-size: 11px; letter-spacing: .18em; color: rgba(255,255,255,.45); margin: 0 0 14px; text-transform: uppercase; }
+.school-root .foot__col a { display: block; font-family: var(--round); font-size: 13px; line-height: 2.1; color: rgba(255,255,255,.8); }
+.school-root .foot__col a:hover { color: #fff; }
+.school-root .foot__bottom { margin-top: clamp(40px, 5vw, 64px); padding-top: 24px; border-top: 1px solid rgba(255,255,255,.12); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; font-family: var(--round); font-size: 11px; letter-spacing: .1em; color: rgba(255,255,255,.45); }
+
+/* セクション間の波 — 親 .sec(position:relative) の最下端に絶対配置 */
+.school-root .sec-wave { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: clamp(40px, 5vw, 70px); display: block; z-index: 1; }
+/* 波と重ならないよう、 波を持つセクションは下余白を少し増やす */
+.school-root .features, .school-root .teachers { padding-bottom: clamp(96px, 11vw, 150px); }
+
+/* ============================================================
+   reveal animation (fail-open)
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .school-root .rv { transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .school-root .rv.pending { opacity: 0; transform: translateY(22px); }
+  .school-root .rv.in { opacity: 1; transform: none; }
+}
+
+/* フォーカスリング */
+.school-root :where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid var(--green); outline-offset: 2px;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 920px) {
+  .school-root .nav { display: none; }
+  .school-root .burger { display: flex; }
+}
+@media (max-width: 920px) {
+  .school-root .fcards { grid-template-columns: 1fr; max-width: 460px; }
+  .school-root .tcards { grid-template-columns: 1fr; max-width: 420px; }
+  .school-root .ccards { grid-template-columns: 1fr; max-width: 540px; }
+  .school-root .plans { grid-template-columns: 1fr; max-width: 460px; }
+  .school-root .access__grid { grid-template-columns: 1fr; }
+  .school-root .line-banner__grid { grid-template-columns: 1fr; }
+  .school-root .fcards .fcard, .school-root .tcards .tcard { transform: none !important; }
+}
+@media (max-width: 720px) {
+  .school-root .hero__inner { height: auto; }
+  .school-root .hero__photo { position: relative; top: auto; right: auto; transform: none; width: 100%; height: clamp(280px, 70vw, 420px); border-radius: 28px; margin-bottom: 18px; }
+  .school-root .hero__stickers { position: relative; left: auto; top: auto; margin: 8px 0 4px; }
+  .school-root .trial__dates { grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .school-root .foot__top { flex-direction: column; }
+}

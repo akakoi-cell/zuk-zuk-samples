@@ -22,18 +22,16 @@
   - [ ] Cloudflare Stream/R2・Stripe・LINE は**本番のみ**（サンプルは未設定でOK）
 - [ ] dev server 停止中（CLI が起動するため）
 
-### 🎨 Claude Design 成果物（重要）
+### 🎨 視覚の正典 = Figma（2026-06-10 変更）
 
-設計書 + Claude Design カンプを必ず参照すること:
+> Claude Design は演出重視トーンで品質不足と判明 → **user の Figma 手起こしデザインを正典**に変更。
+> **視覚の再現は `sample-school-figma-repro.md` を必ず参照**（Figma fileKey / nodeId / 抽出済トークン / 再現ワークフロー）。
 
-- **HTML カンプ**: `.claude/plans/claude-design-school/index.html`（要: Step 4 で生成・保存）
-- **CSS デザイントークン**: `.claude/plans/claude-design-school/styles.css`
-- **スクショ参考画像**: `.claude/plans/claude-design-school/uploads/`
-
-→ レイアウト・余白・タイポグラフィの細部は Claude Design のカンプを「正典」 として参照、 Tailwind v4 で再構築。
-→ inline スタイル臭（`style="width: 40px"` 等）はバグ、 無視して CSS で正しく実装。
-→ **会員デモページ（mypage / lessons）・Google Map iframe・LINE バナーは Claude Design に未実装**の可能性が高い → 設計書 Section 06 / 10 / 11-2 を見て CLI が新規実装。
-→ Claude Design が未実施でも、 設計書だけで実装可能なように記述してある。 カンプがあれば見た目を優先。
+- Figma: `IZSnIpCsrV2cjYMIG0CanV` / node `8-627`（Desktop フル LP）
+- カラートークンは Figma 実値（`#279f77` 緑 / `#f5f3ea` 生成り 等、 figma-repro.md 第2章）を `@theme` に移植
+- セクション構成・コピーも Figma を正（設計書は構成・会員仕様の参考）
+- 会員デモページ（mypage / lessons）・Map・LINE バナーは Figma に無ければ設計書 Section 06 / 10 / 11-2 で新規実装
+- レスポンシブ(SP)は Figma に無い → コード側で再設計
 
 ### CLI 起動コマンド（user 実行）
 

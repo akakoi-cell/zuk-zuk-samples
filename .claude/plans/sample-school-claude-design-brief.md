@@ -1,4 +1,8 @@
-# Claude Design 依頼文 — `Hello Tree` 子供英会話教室サンプル
+> ⚠️ **アーカイブ (2026-06-10)**: Claude Design は演出重視トーン（イラスト配置・余白・世界観）で品質不足と判明。
+> #69 は **user の Figma 手起こし → Figma MCP で design-to-code 再現** に方針変更。
+> 視覚の正典は Figma + `sample-school-figma-repro.md`。 本依頼文は記録用に残置（不採用）。
+
+# Claude Design 依頼文 — `Hello Tree` 子供英会話教室サンプル（アーカイブ）
 
 > https://claude.ai/design を**別タブ**で開き、 下の「📋 貼り付け用プロンプト」 をそのまま貼って実行する。
 > 出力された HTML/CSS は `claude-design-school/`（salon と同様）に保存し、 CLI 自走（night-run-004）の実装見本にする。
